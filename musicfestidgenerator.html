@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MusicFest ID Card Test2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        body { font-family: sans-serif; padding: 20px; display: flex; gap: 40px; }
+        
+        /* --- INPUT SECTION STYLES --- */
+        .input-panel {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        input { padding: 8px; }
+
+        .three-words-container {
+            display: flex;
+            gap: 5px;
+        }
+        .three-words-container input {
+            width: 100%; /* Distribute space evenly */
+        }
+
+        /* --- CARD PREVIEW STYLES --- */
+        #idCard {
+            /* 1. SHAPE: Fixed size landscape rectangle with rounded corners */
+            width: 500px;
+            height: 315px; 
+            border: 2px solid #333;
+            border-radius: 20px; /* Rounded ID card corners */
+            background-color: #f4f4f4;
+            padding: 20px;
+            box-sizing: border-box;
+            
+            /* Layout: Photo on left, text on right */
+            display: flex; 
+            align-items: center;
+            gap: 20px;
+            position: relative; /* For positioning footer items if needed */
+        }
+
+        /* Photo Area */
+        .photo-area {
+            width: 150px;
+            height: 150px;
+            background-color: #ddd;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-shrink: 0; /* Prevents photo from squishing */
+        }
+
+        #photoPreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills the square */
+            display: none; /* Hidden until image is uploaded */
+        }
+
+        /* Text Area */
+        .info-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .field-row {
+            border-bottom: 1px dotted #999;
+            padding-bottom: 2px;
+            display: flex;
+        }
+        
+        .field-label { font-weight: bold; margin-right: 8px; white-space: nowrap; }
+        .field-value { color: #000; font-family: monospace; font-size: 16px; }
+
+        /* Button Style */
+        .btn-download {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="input-panel">
+        <h3>ID Card Details</h3>
+        
+        <label>Upload Photo:</label>
+        <input type="file" id="imgInput" accept="image/*">
+
+        <input type="text" id="nameInput" placeholder="Name">
+
+        <label>Date of Birth (Type numbers only):</label>
+        <input type="text" id="dobInput" placeholder="DDMMYYYY" maxlength="10">
+
+        <label>3 Cool Words:</label>
+        <div class="three-words-container">
+            <input type="text" id="w1Input" placeholder="Word 1">
+            <input type="text" id="w2Input" placeholder="Word 2">
+            <input type="text" id="w3Input" placeholder="Word 3">
+        </div>
+
+        <input type="text" id="bandInput" placeholder="Favorite Band">
+        <input type="text" id="songInput" placeholder="Favorite Song">
+
+        <button class="btn-download" onclick="downloadCard()">Download Card</button>
+    </div>
+
+    <div id="idCard">
+        
+        <div class="photo-area">
+            <img id="photoPreview" src="" alt="">
+            <span id="photoPlaceholder" style="color:#666; font-size:12px;">No Photo</span>
+        </div>
+
+        <div class="info-area">
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">I......Card</div>
+
+            <div class="field-row">
+                <span class="field-label">Name:</span>
+                <span class="field-value" id="dispName"></span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">DOB:</span>
+                <span class="field-value" id="dispDob"></span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">3 Words:</span>
+                <span class="field-value">
+                    <span id="dispW1"></span> / 
+                    <span id="dispW2"></span> / 
+                    <span id="dispW3"></span>
+                </span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Band:</span>
+                <span class="field-value" id="dispBand"></span>
+            </div>
+
+            <div class="field-row">
+                <span class="field-label">Song:</span>
+                <span class="field-value" id="dispSong"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. SIMPLE TEXT MAPPING
+        function mapInput(inputId, displayId) {
+            document.getElementById(inputId).addEventListener('input', (e) => {
+                document.getElementById(displayId).innerText = e.target.value;
+            });
+        }
+        mapInput('nameInput', 'dispName');
+        mapInput('bandInput', 'dispBand');
+        mapInput('songInput', 'dispSong');
+        
+        // 3 Words Mapping (Separate Inputs)
+        mapInput('w1Input', 'dispW1');
+        mapInput('w2Input', 'dispW2');
+        mapInput('w3Input', 'dispW3');
+
+        // 2. IMAGE UPLOAD LOGIC (Only newest image)
+        document.getElementById('imgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0]; // Always grabs the first file in the current selection
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById('photoPreview');
+                    img.src = event.target.result;
+                    img.style.display = 'block'; // Show image
+                    document.getElementById('photoPlaceholder').style.display = 'none'; // Hide text
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 3. DATE AUTO FORMATTING (12122012 -> 12/12/2012)
+        const dobInput = document.getElementById('dobInput');
+        const dispDob = document.getElementById('dispDob');
+
+        dobInput.addEventListener('input', function(e) {
+            // Remove any non-number characters
+            let val = e.target.value.replace(/\D/g, '');
+            
+            // Limit to 8 numbers (DDMMYYYY)
+            if (val.length > 8) val = val.substring(0, 8);
+
+            // Add formatting slashes
+            let formattedDate = val;
+            if (val.length > 4) {
+                formattedDate = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4);
+            } else if (val.length > 2) {
+                formattedDate = val.slice(0, 2) + '/' + val.slice(2);
+            }
+
+            // Update input value and display
+            e.target.value = formattedDate;
+            dispDob.innerText = formattedDate;
+        });
+
+        // 4. DOWNLOAD LOGIC
+        function downloadCard() {
+            html2canvas(document.getElementById('idCard')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'custom-id-card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+
+</body>
+</html>
