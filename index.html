@@ -87,14 +87,14 @@
     /* date: top-right */
     #headerDate {
       position: absolute;
-      right: 75px;
+      right: 80px;
       top: 50%;
       transform: translateY(-50%);
-      max-width: 180px;
+      max-width: 1000px;
       overflow: hidden;
       text-overflow: ellipsis;
       font-family: 'Doto', monospace;
-      font-size: 22px;
+      font-size: 30px;
       letter-spacing: 2px;
       color: #eaeaea;
       white-space: nowrap;
@@ -204,8 +204,8 @@
     /* “ยัง ... อยู่ ...” */
     .footer-text-wrapper {
       position: absolute;
-      bottom: 4px;
-      right: 0px;
+      bottom: 6px;
+      right: 13px;
       z-index: 3;
       display: flex;
       align-items: baseline;
@@ -310,6 +310,7 @@
 <body>
 
   <div class="controls">
+    <!-- keep upload on top if you still want it; it will also work from inside the box -->
     <label for="imgInput" class="file-label">Upload photo</label>
     <button class="btn" id="btnDownload">Download Card</button>
     <div class="hint">
@@ -327,7 +328,7 @@
         I
         <span id="sigSpace"
               class="editable-inline"
-              contenteditable="true">......</span>
+              contenteditable="true"></span>
         Card
       </div>
       <div id="headerDate">13 FEB 2026</div>
@@ -338,6 +339,7 @@
         <img id="photoPreview" src="">
         <span id="photoPlaceholder"></span>
 
+        <!-- centered button inside preview box -->
         <label for="imgInput" class="photo-upload-label" id="photoUploadLabel">Upload photo</label>
         <input type="file" id="imgInput" accept="image/*">
       </div>
@@ -392,15 +394,16 @@
 
     <!-- footer text: ยัง ____ อยู่ ____ -->
     <div class="footer-text-wrapper">
-      <span class="label-yang">ยัง</span>
-      <span id="footerMiddle"
+    <span id="footerMiddle"
             class="editable-inline"
-            contenteditable="true">......</span>
-      <span class="label-yuu">อยู่</span>
-      <span id="footerAfter"
+            contenteditable="true"></span>
+    <span class="label-yang">ยัง</span>
+    <span id="footerAfter"
             class="editable-inline"
-            contenteditable="true">......</span>
+            contenteditable="true"></span>
+    <span class="label-yuu">อยู่</span>
     </div>
+
 
     <div class="footer-message">
       <div class="footer-line-top">
@@ -538,16 +541,16 @@
 
     // image upload
     imgInput.addEventListener('change', e => {
-      const file = e.target.files[0];
+      const file = e.target.files[0]; // single file
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = ev => {
-        photo.src = ev.target.result;
+        photo.src = ev.target.result;       // replace old image
         photo.style.display = 'block';
         photoPlaceholder.style.display = 'none';
         if (photoUploadLabel) {
-          photoUploadLabel.style.display = 'none';
+          photoUploadLabel.style.display = 'none'; // hide button in box
         }
 
         scale = 1;
@@ -557,9 +560,11 @@
       };
       reader.readAsDataURL(file);
 
+      // reset input so selecting same file again still triggers change
       e.target.value = '';
     });
 
+    // download card
     btnDownload.addEventListener('click', () => {
       if (!dispName.innerText.trim()) {
         alert('Please enter your name on the card first.');
