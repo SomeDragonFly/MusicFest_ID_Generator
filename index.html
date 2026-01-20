@@ -1,383 +1,575 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MusicFest ID Card</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <title>MusicFest ID Card</title>
+  <meta charset="utf-8" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&family=Prompt:wght@400;600;700&family=Doto&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-dark: #2657ab;
+      --blue-light: #5773a1;
+      --green-dark: #377253;
+      --green-light: #457b61;
+      --red-accent: #bb4237;
+      --bg-cream: #dee0d1;
+    }
 
-    <link href="https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&family=Prompt:wght@400;600;700&family=Doto&display=swap" rel="stylesheet">
+    body {
+      font-family: 'Prompt', sans-serif;
+      padding: 20px;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
 
-    <style>
-        /* Global Styles & Variables */
-        :root {
-            --blue-dark: #2657ab;
-            --blue-light: #5773a1;
-            --green-dark: #377253;
-            --green-light: #457b61;
-            --red-accent: #bb4237;
-            --bg-cream: #dee0d1;
-        }
+    #idCard {
+      width: 600px;
+      height: 380px;
+      background-color: var(--bg-cream);
+      border-radius: 40px;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
 
-        body { 
-            font-family: 'Prompt', sans-serif; 
-            padding: 20px; 
-            display: flex; 
-            gap: 40px; 
-            background-color: #f0f0f0; 
-        }
+    .star {
+      position: absolute;
+      font-size: 220px;
+      line-height: 1;
+      filter: drop-shadow(6px 6px 0 rgba(255,255,255,0.35));
+      z-index: 2;
+    }
+    .star-red   { top: -40px; right: -20px; color: var(--red-accent); transform: rotate(15deg); z-index: 3; }
+    .star-blue  { bottom: -60px; left: 10px; font-size: 190px; color: var(--blue-light); transform: rotate(-10deg); }
+    .star-green { top: -50px; left: -40px; font-size: 200px; color: var(--green-light); transform: rotate(-8deg); }
 
-        /* UI Input Panel */
-        .input-panel {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+    .header-bar {
+      background-color: var(--green-dark);
+      height: 85px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      position: relative;
+      z-index: 3;
+    }
 
-        input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: 'Prompt', sans-serif; }
-        .three-words-container { display: flex; gap: 5px; }
-        .three-words-container input { width: 100%; }
+    .header-text {
+      font-family: 'Special Gothic Expanded One', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #ffffff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
 
-        /* ID Card Base */
-        #idCard {
-            width: 600px;
-            height: 380px;
-            background-color: var(--bg-cream);
-            border-radius: 40px;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-            display: flex; 
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+    .editable-inline {
+      outline: none;
+      cursor: text;
+    }
 
-        /* Decorative Elements */
-        .star {
-            position: absolute;
-            font-size: 220px;
-            line-height: 1;
-            filter: drop-shadow(6px 6px 0 rgba(255,255,255,0.35));
-            z-index: 2;
-        }
+    #sigSpace {
+      border-bottom: 3px dotted #ffffff;
+      min-width: 120px;
+      text-transform: uppercase;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
 
-        .star-red { top: -40px; right: -20px; color: var(--red-accent); transform: rotate(15deg); z-index: 3; }
-        .star-blue { bottom: -60px; left: 10px; font-size: 190px; color: var(--blue-light); transform: rotate(-10deg); }
-        .star-green { top: -50px; left: -40px; font-size: 200px; color: var(--green-light); transform: rotate(-8deg); }
+    /* date: top-right */
+    #headerDate {
+      position: absolute;
+      right: 75px;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Doto', monospace;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: #eaeaea;
+      white-space: nowrap;
+      z-index: 10;
+    }
 
-        /* Card Header Section */
-        .header-bar {
-            background-color: var(--green-dark);
-            height: 85px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-            position: relative;   
-            z-index: 3;
-        }
+    .card-body {
+      display: flex;
+      padding: 20px 35px;
+      gap: 30px;
+      z-index: 3;
+    }
 
-        .header-text {
-            font-family: 'Special Gothic Expanded One', sans-serif;
-            font-size: 46px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            color: #000;
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
+    .photo-area {
+      width: 170px;
+      height: 170px;
+      background-color: #fff;
+      border: 6px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-top: 10px;
+      position: relative;
+    }
 
-        #sigSpace {
-            border-bottom: 3px dotted #000;
-            min-width: 120px;
-            outline: none;
-            text-transform: uppercase;
-            font-size: 28px; 
-            letter-spacing: 2px;
-        }
+    #photoPreview {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: unset;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      display: none;
+    }
 
-        #headerDate {
-            position: absolute;
-            right: 75px;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 180px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'Doto', monospace;
-            font-size: 22px;
-            letter-spacing: 2px;
-            color: #eaeaea;
-            white-space: nowrap;
-            z-index: 10; 
-        }
+    #photoPlaceholder {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      padding: 10px;
+    }
 
-        /* Card Body & Information */
-        .card-body {
-            display: flex;
-            padding: 20px 35px;
-            gap: 30px;
-            z-index: 3;
-        }
+    /* centered upload button inside photo box */
+    .photo-upload-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 8px 14px;
+      background-color: var(--green-dark);
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Prompt', sans-serif;
+      text-align: center;
+      z-index: 5;
+    }
 
-        .photo-area {
-            width: 170px;
-            height: 170px;
-            background-color: #fff;
-            border: 6px solid #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            flex-shrink: 0;
-            margin-top: 10px;
-        }
+    .info-area {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
 
-        #photoPreview { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            object-position: center top; 
-            display: none; 
-        }
+    .field-row {
+      border-bottom: 2px dotted #333;
+      padding-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+    }
 
-        .info-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-top: 10px;
-        }
+    .field-label {
+      font-weight: 600;
+      margin-right: 8px;
+      white-space: nowrap;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
 
-        .field-row {
-            border-bottom: 2px dotted #333;
-            padding-bottom: 6px;
-            display: flex;
-            align-items: baseline;
-        }
-        
-        .field-label { font-weight: 600; margin-right: 8px; white-space: nowrap; font-size: 13px; letter-spacing: 0.5px; }
-        .field-value { color: #000; font-family: monospace; font-size: 18px; font-weight: bold; }
-        .dob { letter-spacing: 2px; }
+    .field-value {
+      color: #000;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+    }
 
-        /* Card Footer Section */
-        .footer-bar {
-            background-color: var(--blue-dark);
-            height: 50px;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            z-index: 2;
-        }
+    .dob { letter-spacing: 2px; }
 
-        .footer-text {
-            position: absolute;
-            bottom: 3px;
-            right: 40px;
-            font-size: 34px;
-            letter-spacing: 3px;
-            color: var(--bg-cream);
-            z-index: 3;
-            white-space: nowrap;
-        }
+    .footer-bar {
+      background-color: var(--blue-dark);
+      height: 50px;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      z-index: 2;
+    }
 
-        /* Controls */
-        .btn-download {
-            margin-top: 20px;
-            padding: 12px;
-            background-color: var(--blue-dark);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    /* “ยัง ... อยู่ ...” */
+    .footer-text-wrapper {
+      position: absolute;
+      bottom: 4px;
+      right: 0px;
+      z-index: 3;
+      display: flex;
+      align-items: baseline;
+      gap: 1px;
+      font-family: 'Special Gothic Expanded One', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--bg-cream);
+      white-space: nowrap;
+    }
 
-        .sync-row { font-size: 14px; }
-    </style>
+    .label-yang {
+      margin-right: 4px;
+    }
+
+    .label-yuu {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+
+    #footerMiddle,
+    #footerAfter {
+      width: 120px;
+      border-bottom: 3px dotted var(--bg-cream);
+      text-transform: uppercase;
+      outline: none;
+      cursor: text;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    #footerMiddle { min-width: 5px; }
+    #footerAfter  { min-width: 1px; }
+
+    /* bottom-left message */
+    .footer-message {
+      position: absolute;
+      bottom: 10px;
+      left: 22px;
+      z-index: 3;
+      font-size: 11px;
+      max-width: 230px;
+      color: #d6d9ff;
+      font-family: 'Prompt', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.2;
+    }
+
+    .footer-line-top {
+      text-align: center;
+    }
+
+    .footer-young {
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      background-color: var(--blue-dark);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    .file-label {
+      display: inline-block;
+      padding: 8px 14px;
+      background-color: var(--green-dark);
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #imgInput {
+      display: none;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #555;
+      text-align: center;
+      max-width: 480px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="input-panel">
-        <h3>ID Card Details</h3>
-        
-        <label>1. Photo:</label>
+  <div class="controls">
+    <button class="btn" id="btnDownload">Download Card</button>
+    <div class="hint">
+      After uploading: drag to move, scroll to zoom in/out (or pinch on mobile).
+    </div>
+  </div>
+
+  <div id="idCard">
+    <div class="star star-green">★</div>
+    <div class="star star-red">★</div>
+    <div class="star star-blue">★</div>
+
+    <div class="header-bar">
+      <div class="header-text">
+        I
+        <span id="sigSpace"
+              class="editable-inline"
+              contenteditable="true">......</span>
+        Card
+      </div>
+      <div id="headerDate">13 FEB 2026</div>
+    </div>
+
+    <div class="card-body">
+      <div class="photo-area">
+        <img id="photoPreview" src="">
+        <span id="photoPlaceholder"></span>
+
+        <!-- centered button inside preview box -->
+        <label for="imgInput" class="photo-upload-label">Upload photo</label>
         <input type="file" id="imgInput" accept="image/*">
+      </div>
 
-        <label>2. Name (Detail Section):</label>
-        <input type="text" id="nameInput" placeholder="Enter Full Name" maxlength="24">
-
-        <label class="sync-row">
-            <input type="checkbox" id="syncSig">
-            Sync signature with name
-        </label>
-
-        <label>3. Born (DDMMYYYY):</label>
-        <input type="text" id="dobInput" placeholder="Type numbers only" maxlength="10">
-
-        <label>4. 3 Cool Words:</label>
-        <div class="three-words-container">
-            <input type="text" id="w1Input" placeholder="Word 1">
-            <input type="text" id="w2Input" placeholder="Word 2">
-            <input type="text" id="w3Input" placeholder="Word 3">
+      <div class="info-area">
+        <div class="field-row">
+          <span class="field-label">มายเนมอีส:</span>
+          <span class="field-value editable-inline"
+                id="dispName"
+                contenteditable="true"></span>
         </div>
 
-        <label>5. Music:</label>
-        <input type="text" id="bandInput" placeholder="Favorite Band">
-        <input type="text" id="songInput" placeholder="Favorite Song">
+        <div class="field-row">
+          <span class="field-label">วันที่คลอด:</span>
+          <span class="field-value dob editable-inline"
+                id="dispDob"
+                contenteditable="true"></span>
+        </div>
 
-        <button class="btn-download" onclick="downloadCard()">Download Card</button>
+        <div class="field-row">
+          <span class="field-label">3 คำเด็ด:</span>
+          <span class="field-value">
+            <span class="editable-inline"
+                  id="dispW1"
+                  contenteditable="true"></span>
+            /
+            <span class="editable-inline"
+                  id="dispW2"
+                  contenteditable="true"></span>
+            /
+            <span class="editable-inline"
+                  id="dispW3"
+                  contenteditable="true"></span>
+          </span>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">วงที่ชอบ:</span>
+          <span class="field-value editable-inline"
+                id="dispBand"
+                contenteditable="true"></span>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">เพลงโปรด:</span>
+          <span class="field-value editable-inline"
+                id="dispSong"
+                contenteditable="true"></span>
+        </div>
+      </div>
     </div>
 
-    <div id="idCard">
-        <div class="star star-green">★</div>
-        <div class="star star-red">★</div>
-        <div class="star star-blue">★</div>
-
-        <div class="header-bar">
-            <div class="header-text">
-                I<span id="sigSpace" contenteditable="true">......</span>Card
-            </div>
-            <div id="headerDate">13 FEB 2026</div>
-        </div>
-        
-        <div class="card-body">
-            <div class="photo-area">
-                <img id="photoPreview" src="">
-                <span id="photoPlaceholder">No Photo</span>
-            </div>
-
-            <div class="info-area">
-                <div class="field-row">
-                    <span class="field-label">มายเนม อีส:</span>
-                    <span class="field-value" id="dispName"></span>
-                </div>
-
-                <div class="field-row">
-                    <span class="field-label">วันที่คลอด:</span>
-                    <span class="field-value dob" id="dispDob"></span>
-                </div>
-
-                <div class="field-row">
-                    <span class="field-label">3 คำ เด็ด:</span>
-                    <span class="field-value">
-                        <span id="dispW1"></span> / <span id="dispW2"></span> / <span id="dispW3"></span>
-                    </span>
-                </div>
-
-                <div class="field-row">
-                    <span class="field-label">วงที่ชอบ:</span>
-                    <span class="field-value" id="dispBand"></span>
-                </div>
-
-                <div class="field-row">
-                    <span class="field-label">เพลงโปรด:</span>
-                    <span class="field-value" id="dispSong"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-text" id="footerText">&nbsp;ยัง&nbsp;อยู่</div>
-        <div class="footer-bar"></div>
+    <!-- footer text: ยัง ____ อยู่ ____ -->
+    <div class="footer-text-wrapper">
+      <span class="label-yang">ยัง</span>
+      <span id="footerMiddle"
+            class="editable-inline"
+            contenteditable="true">......</span>
+      <span class="label-yuu">อยู่</span>
+      <span id="footerAfter"
+            class="editable-inline"
+            contenteditable="true">......</span>
     </div>
 
-    <script>
-        /* Initialization & Input Mapping */
-        function mapInput(inputId, displayId) {
-            document.getElementById(inputId).addEventListener('input', (e) => {
-                document.getElementById(displayId).innerText = e.target.value;
-            });
-        }
-        
-        mapInput('nameInput', 'dispName');
-        mapInput('bandInput', 'dispBand');
-        mapInput('songInput', 'dispSong');
-        mapInput('w1Input', 'dispW1');
-        mapInput('w2Input', 'dispW2');
-        mapInput('w3Input', 'dispW3');
+    <div class="footer-message">
+      <div class="footer-line-top">
+        Who once holds this card always a
+      </div>
+      <div class="footer-young">
+        “YOUNG”
+      </div>
+    </div>
 
-        const sigSpace = document.getElementById('sigSpace');
-        const nameInput = document.getElementById('nameInput');
-        const syncSig = document.getElementById('syncSig');
-        const footerText = document.getElementById('footerText');
+    <div class="footer-bar"></div>
+  </div>
 
-        /* Footer & Name Logic */
-        function updateFooterText(fullName) {
-            const parts = fullName.trim().split(/\s+/);
-            if (parts.length >= 2) {
-                footerText.innerText = `${parts[0]} ยัง ${parts.slice(1).join(' ')} อยู่`;
-            } else if (parts.length === 1 && parts[0] !== '') {
-                footerText.innerText = `${parts[0]} ยัง อยู่`;
-            } else {
-                footerText.innerHTML = '&nbsp;ยัง&nbsp;อยู่';
-            }
-        }
+  <script>
+    const id = document.getElementById.bind(document);
 
-        nameInput.addEventListener('input', () => {
-            if (syncSig.checked) {
-                sigSpace.innerText = nameInput.value || '......';
-            }
-            updateFooterText(nameInput.value);
-        });
+    const sigSpace        = id('sigSpace');
+    const dispName        = id('dispName');
+    const dispDob         = id('dispDob');
+    const imgInput        = id('imgInput');
+    const btnDownload     = id('btnDownload');
+    const photo           = id('photoPreview');
+    const photoArea       = document.querySelector('.photo-area');
+    const photoPlaceholder= id('photoPlaceholder');
+    const footerMiddle    = id('footerMiddle');
+    const footerAfter     = id('footerAfter');
 
-        sigSpace.addEventListener('input', () => {
-            if (syncSig.checked) syncSig.checked = false;
-        });
+    // header signature placeholder
+    sigSpace.addEventListener('blur', () => {
+      if (sigSpace.innerText.trim() === '') sigSpace.innerText = '......';
+    });
 
-        sigSpace.addEventListener('blur', () => {
-            if (sigSpace.innerText.trim() === '') sigSpace.innerText = '......';
-        });
+    // footer placeholders
+    footerMiddle.addEventListener('blur', () => {
+      if (footerMiddle.innerText.trim() === '') footerMiddle.innerText = '......';
+    });
 
-        /* Media Handling */
-        document.getElementById('imgInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.getElementById('photoPreview');
-                    img.src = event.target.result;
-                    img.style.display = 'block';
-                    document.getElementById('photoPlaceholder').style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
+    footerAfter.addEventListener('blur', () => {
+      if (footerAfter.innerText.trim() === '') footerAfter.innerText = '......';
+    });
 
-        /* Data Formatting */
-        document.getElementById('dobInput').addEventListener('input', function(e) {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val.length > 8) val = val.substring(0, 8);
-            let out = val;
-            if (val.length > 4) out = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4);
-            else if (val.length > 2) out = val.slice(0, 2) + '/' + val.slice(2);
-            e.target.value = out;
-            document.getElementById('dispDob').innerText = out;
-        });
+    // DOB auto formatting
+    dispDob.addEventListener('input', () => {
+      let val = dispDob.innerText.replace(/\D/g, '');
+      if (val.length > 8) val = val.substring(0, 8);
+      let out = val;
+      if (val.length > 4) out = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4);
+      else if (val.length > 2) out = val.slice(0, 2) + '/' + val.slice(2);
+      dispDob.innerText = out;
 
-        /* Image Generation */
-        function downloadCard() {
-            const dispName = document.getElementById('dispName');
-            if (!dispName.innerText.trim()) {
-                alert('Please enter a name first.');
-                return;
-            }
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(dispDob);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
 
-            html2canvas(document.getElementById('idCard'), {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: null
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'MusicFest-ID.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-    </script>
+    // photo drag / zoom
+    let scale = 1;
+    let posX = 0;
+    let posY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let lastTouchDist = null;
+
+    function updatePhotoTransform() {
+      photo.style.transform =
+        `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scale})`;
+    }
+
+    photo.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.clientX - posX;
+      startY = e.clientY - posY;
+      photo.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      posX = e.clientX - startX;
+      posY = e.clientY - startY;
+      updatePhotoTransform();
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      photo.style.cursor = 'grab';
+    });
+
+    photoArea.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      scale = Math.min(3, Math.max(0.5, scale + delta));
+      updatePhotoTransform();
+    });
+
+    function getTouchDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.hypot(dx, dy);
+    }
+
+    photoArea.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX - posX;
+        startY = e.touches[0].clientY - posY;
+      } else if (e.touches.length === 2) {
+        lastTouchDist = getTouchDistance(e.touches);
+      }
+    });
+
+    photoArea.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (e.touches.length === 1 && isDragging) {
+        posX = e.touches[0].clientX - startX;
+        posY = e.touches[0].clientY - startY;
+        updatePhotoTransform();
+      } else if (e.touches.length === 2) {
+        const newDist = getTouchDistance(e.touches);
+        const delta = (newDist - lastTouchDist) * 0.005;
+        scale = Math.min(3, Math.max(0.5, scale + delta));
+        updatePhotoTransform();
+        lastTouchDist = newDist;
+      }
+    });
+
+    photoArea.addEventListener('touchend', () => {
+      isDragging = false;
+      lastTouchDist = null;
+    });
+
+    // image upload
+    imgInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        photo.src = ev.target.result;
+        photo.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+
+        scale = 1;
+        posX = 0;
+        posY = 0;
+        updatePhotoTransform();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // download card
+    btnDownload.addEventListener('click', () => {
+      if (!dispName.innerText.trim()) {
+        alert('Please enter your name on the card first.');
+        return;
+      }
+      html2canvas(id('idCard'), {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'MusicFest-ID.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+  </script>
 </body>
 </html>
-
