@@ -246,8 +246,8 @@
     /* bottom-left message */
     .footer-message {
       position: absolute;
-      bottom: 10px;
-      left: 22px;
+      bottom: 12px;
+      left: 26px;
       z-index: 3;
       font-size: 11px;
       max-width: 230px;
@@ -310,6 +310,7 @@
 <body>
 
   <div class="controls">
+    <label for="imgInput" class="file-label">Upload photo</label>
     <button class="btn" id="btnDownload">Download Card</button>
     <div class="hint">
       After uploading: drag to move, scroll to zoom in/out (or pinch on mobile).
@@ -337,8 +338,7 @@
         <img id="photoPreview" src="">
         <span id="photoPlaceholder"></span>
 
-        <!-- centered button inside preview box -->
-        <label for="imgInput" class="photo-upload-label">Upload photo</label>
+        <label for="imgInput" class="photo-upload-label" id="photoUploadLabel">Upload photo</label>
         <input type="file" id="imgInput" accept="image/*">
       </div>
 
@@ -417,16 +417,17 @@
   <script>
     const id = document.getElementById.bind(document);
 
-    const sigSpace        = id('sigSpace');
-    const dispName        = id('dispName');
-    const dispDob         = id('dispDob');
-    const imgInput        = id('imgInput');
-    const btnDownload     = id('btnDownload');
-    const photo           = id('photoPreview');
-    const photoArea       = document.querySelector('.photo-area');
-    const photoPlaceholder= id('photoPlaceholder');
-    const footerMiddle    = id('footerMiddle');
-    const footerAfter     = id('footerAfter');
+    const sigSpace         = id('sigSpace');
+    const dispName         = id('dispName');
+    const dispDob          = id('dispDob');
+    const imgInput         = id('imgInput');
+    const btnDownload      = id('btnDownload');
+    const photo            = id('photoPreview');
+    const photoArea        = document.querySelector('.photo-area');
+    const photoPlaceholder = id('photoPlaceholder');
+    const footerMiddle     = id('footerMiddle');
+    const footerAfter      = id('footerAfter');
+    const photoUploadLabel = id('photoUploadLabel');
 
     // header signature placeholder
     sigSpace.addEventListener('blur', () => {
@@ -539,11 +540,15 @@
     imgInput.addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
+
       const reader = new FileReader();
       reader.onload = ev => {
         photo.src = ev.target.result;
         photo.style.display = 'block';
         photoPlaceholder.style.display = 'none';
+        if (photoUploadLabel) {
+          photoUploadLabel.style.display = 'none';
+        }
 
         scale = 1;
         posX = 0;
@@ -551,9 +556,10 @@
         updatePhotoTransform();
       };
       reader.readAsDataURL(file);
+
+      e.target.value = '';
     });
 
-    // download card
     btnDownload.addEventListener('click', () => {
       if (!dispName.innerText.trim()) {
         alert('Please enter your name on the card first.');
