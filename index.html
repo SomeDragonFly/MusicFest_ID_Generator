@@ -148,8 +148,8 @@
     }
 
     .header-text {
-      font-family: 'Reenie Beanie', cursive;
-      font-size: 77px;
+      font-family: 'Special Gothic Expanded One', sans-serif;
+      font-size: 65px;
       font-weight: 900;
       letter-spacing: -1px;
       color: #000000;
@@ -265,6 +265,7 @@
       font-family: 'IBM Plex Sans Thai', sans-serif;
       font-size: 18px;
       font-weight: bold;
+      right: 30px;
 
       flex-grow: 1;
       border-bottom: 2px dotted #333;
@@ -292,7 +293,7 @@
       display: flex;
       align-items: baseline;
       gap: 1px;
-      font-family: 'dotted-thai', cursive;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
       font-size: 40px;
       font-weight: 800;
       letter-spacing: 1px;
@@ -331,8 +332,8 @@
 
     .footer-text-head {
       position: absolute;
-      bottom: 67.9px;
-      right: 33.33%;
+      bottom: 66px;
+      right: 236px;
       font-family:'IBM Plex Sans Thai', sans-serif;
       font-size: 11px;
       font-weight: bold;
@@ -548,10 +549,6 @@
         if (el.innerText.trim() === '') el.innerText = '......';
       });
     };
-
-    setPlaceholder(sigSpace);
-    setPlaceholder(footerMiddle); 
-    setPlaceholder(footerAfter);
 
     // DOB Formatting
     dispDob.addEventListener('input', () => {
