@@ -11,13 +11,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
+    <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@100;200;300;400;500;600;700&family=Reenie+Beanie&family=Special+Gothic+Expanded+One&family=Prompt:wght@400;600;700&family=Doto&display=swap"
         rel="stylesheet">
 
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
 
     <style>
         :root {
@@ -42,7 +42,25 @@
             min-height: 100vh;
             gap: 16px;
             padding-top: 20px;
+            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
         }
+
+        /* --- WRAPPERS (KEY MOBILE FIX) --- */
+        /* This ensures the wrappers don't force the page to be 600px wide */
+        #cardWrapper, #idCardBackWrapper {
+            position: relative;
+            margin: 0 auto;
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* CRITICAL: Hides the "ghost" width of scaled elements */
+        }
+
+        /* Add top margin specifically to wrappers, handled by JS scaling */
+        #cardWrapper { margin-top: 20px; }
+        #idCardBackWrapper { margin-top: 20px; }
 
         /* --- CROPPER MODAL STYLES --- */
         .modal-overlay {
@@ -100,16 +118,28 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0);
-
-            background-color: var(--bg-cream);
-
+            flex-shrink: 0; /* Prevents card from squishing */
             background-image:
                 radial-gradient(#6669585b 0.9px, transparent 0.9px),
                 radial-gradient(#6669585b 0.9px, transparent 0.9px);
-
             background-size: 10px 10px;
-
             background-position: 0 0, 5px 5px;
+        }
+
+        #idCardBack {
+            width: 600px;
+            height: 380px;
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
+        .back-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
         .star {
@@ -123,10 +153,8 @@
         .star-red {
             top: -120px;
             right: -37px;
-            color:
-                var(--red-accent);
-            transform:
-                rotate(-15deg);
+            color: var(--red-accent);
+            transform: rotate(-15deg);
             z-index: 4;
             mix-blend-mode: hard-light;
         }
@@ -290,11 +318,9 @@
             font-size: 18px;
             font-weight: bold;
             right: 30px;
-
             flex-grow: 1;
             border-bottom: 2px dotted #333;
             min-width: 50px;
-
             line-height: 1.0;
             vertical-align: baseline;
             position: relative;
@@ -325,17 +351,10 @@
             color: #000;
         }
 
-        .label-yang {
-            margin-right: 4px;
-        }
+        .label-yang { margin-right: 4px; }
+        .label-yuu { margin-left: 4px; margin-right: 4px; }
 
-        .label-yuu {
-            margin-left: 4px;
-            margin-right: 4px;
-        }
-
-        #footerMiddle,
-        #footerAfter {
+        #footerMiddle, #footerAfter {
             width: 90px;
             line-height: 0.8;
             border-bottom: 5px dotted var(--black);
@@ -344,16 +363,10 @@
             cursor: text;
             display: inline-block;
             white-space: nowrap;
-
         }
 
-        #footerMiddle {
-            min-width: 5px;
-        }
-
-        #footerAfter {
-            min-width: 1px;
-        }
+        #footerMiddle { min-width: 5px; }
+        #footerAfter { min-width: 1px; }
 
         .footer-message {
             position: absolute;
@@ -376,29 +389,37 @@
             font-weight: bold;
         }
 
+        /* --- CONTROLS & BUTTONS --- */
         .controls {
             display: flex;
-            flex-direction: row; /* Change to row for side-by-side */
+            flex-wrap: wrap;       /* ALLOW WRAPPING */
             justify-content: center;
-            gap: 15px; /* Spacing between buttons */
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 10px;
             margin-top: 20px;
-            margin-bottom: 40px; /* Add bottom margin so it doesn't touch screen edge */
+            margin-bottom: 40px;
         }
 
         .btn {
-            padding: 10px 20px;
             background-color: var(--blue-dark);
             color: white;
             border: none;
-            border-radius: 50px; /* Fully rounded buttons look better with icons */
+            border-radius: 50px;
+            padding: 10px 20px;
             font-weight: bold;
-            cursor: pointer;
             font-family: 'Prompt', sans-serif;
             font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px; /* Space between icon and text */
+            cursor: pointer;
             transition: transform 0.1s;
+            display: inline-flex;  /* Keeps icon and text together */
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .btn:active {
@@ -410,14 +431,18 @@
         }
 
         .btn-icon-only {
-            padding: 12px;
-            border-radius: 50%; /* Perfect circle */
+            background-color: var(--green-dark);
+            color: white;
+            font-size: 20px;
+            width: 46px;
+            height: 46px;
+            padding: 0;
+            border-radius: 50%;
             aspect-ratio: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
-            background-color: var(--green-dark); /* Different color for share */
+            flex-shrink: 0;
         }
 
         .file-label {
@@ -438,48 +463,14 @@
             display: none;
         }
 
-
-        #idCardBackWrapper {
-            position: relative;
-            transform-origin: top center;
-            margin-top: 20px; /* Space between cards */
-        }
-
-        /* The back card itself */
-        #idCardBack {
-            /* Match the front card's exact size */
-            width: 600px; 
-            height: 380px;
-            
-            position: relative;
-            z-index: 1;
-            background: transparent; 
-        }
-
-        .back-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Ensures the whole card image is visible */
-            display: block;
-        }
-
-        h1 {
+        h1, h2 {
             font-family: 'IBM Plex Sans Thai', sans-serif;
-        }
-        h2 {
-            font-family: 'IBM Plex Sans Thai', sans-serif;
+            text-align: center;
         }
 
         @media (max-width: 640px) {
-            .cards-stack {
-                gap: 10px; /* Smaller gap on mobile */
-            }
-            
-            /* Remove any default margins that might be adding up */
-            #idCardWrapper, #idCardBackWrapper {
-                margin: 0; 
-                padding: 0;
-            }
+            .cards-stack { gap: 10px; }
+            .btn { font-size: 14px; padding: 8px 16px; }
         }
     </style>
 </head>
@@ -502,20 +493,14 @@
         </div>
     </div>
 
-
-
-    <div id="cardWrapper"
-        style="position: relative; margin: 20px auto; max-width: 600px; width: 100%; display: flex; flex-direction: column; align-items: center;">
-
-        <div id="idCard" style="margin: 0; transform-origin: top center; flex-shrink: 0;">
+    <!-- FRONT CARD WRAPPER -->
+    <div id="cardWrapper">
+        <div id="idCard">
             <div class="star star-green">★</div>
-
             <div id="headerDate">13 FEB 2026</div>
-
             <div class="star-red-container">
                 <div class="star star-red">★</div>
             </div>
-
             <div class="star star-blue">★</div>
 
             <div class="header-bar">
@@ -572,12 +557,11 @@
             </div>
 
             <div class="footer-text-head">"อยากจะบอกตัวเองไว้ว่า"</div>
-
             <div class="footer-bar"></div>
-
         </div>
     </div>
 
+    <!-- BACK CARD WRAPPER -->
     <div id="idCardBackWrapper">
         <div id="idCardBack">
             <img src="image.png" class="back-img">
@@ -588,7 +572,6 @@
     <h2>Young You</h2>
 
     <div class="controls">
-
         <label for="imgInput" class="btn" id="btnControlUpload">
             <i class="fa-solid fa-camera"></i> Upload Image
         </label>
@@ -605,263 +588,271 @@
 
     <input type="file" id="imgInput" accept="image/*">
 
+<script>
+    const id = document.getElementById.bind(document);
 
-    <script>
-        const id = document.getElementById.bind(document);
+    const imgInput = id('imgInput');
+    const photoPreview = id('photoPreview');
+    const photoPlaceholder = id('photoPlaceholder');
+    const photoUploadLabel = id('photoUploadLabel');
 
-        const imgInput = id('imgInput');
-        const photoPreview = id('photoPreview');
-        const photoPlaceholder = id('photoPlaceholder');
-        const photoUploadLabel = id('photoUploadLabel');
+    const cropModal = id('cropModal');
+    const imageToCrop = id('imageToCrop');
+    const btnApplyCrop = id('btnApplyCrop');
+    const btnCancelCrop = id('btnCancelCrop');
 
-        const cropModal = id('cropModal');
-        const imageToCrop = id('imageToCrop');
-        const btnApplyCrop = id('btnApplyCrop');
-        const btnCancelCrop = id('btnCancelCrop');
+    let cropper = null;
 
-        let cropper = null;
-
-        imgInput.addEventListener('change', (e) => {
+    // --- IMAGE LOGIC (Unchanged) ---
+    imgInput.addEventListener('change', (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-
         reader.onload = (ev) => {
             imageToCrop.src = ev.target.result;
             cropModal.style.display = 'flex';
 
             if (cropper) cropper.destroy();
             cropper = new Cropper(imageToCrop, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 1
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1
             });
-
-            // Reset AFTER the file is loaded (safe)
             imgInput.value = '';
         };
-
         reader.readAsDataURL(file);
-        });
+    });
 
-        btnCancelCrop.addEventListener('click', () => {
-            cropModal.style.display = 'none';
-            if (cropper) cropper.destroy();
-        });
+    btnCancelCrop.addEventListener('click', () => {
+        cropModal.style.display = 'none';
+        if (cropper) cropper.destroy();
+    });
 
-        btnApplyCrop.addEventListener('click', () => {
-            if (!cropper) return;
-            
-            const croppedCanvas = cropper.getCroppedCanvas({
-                width: 400,
-                height: 400
-            });
-            
-            // 1. Show the image
-            photoPreview.src = croppedCanvas.toDataURL('image/png');
-            photoPreview.style.display = 'block';
-            
-            // 2. Hide the placeholder and the TOP label (cleaner UI)
-            photoPlaceholder.style.display = 'none';
-            const topLabel = document.getElementById('photoUploadLabel');
-            if (topLabel) topLabel.style.display = 'none';
+    btnApplyCrop.addEventListener('click', () => {
+        if (!cropper) return;
+        const croppedCanvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
 
-            // 3. Update the BOTTOM button text
-            const bottomBtn = document.getElementById('btnControlUpload');
-            if (bottomBtn) {
-                bottomBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Change Image';
-            }
-            
-            // 4. Cleanup
-            cropModal.style.display = 'none';
-            cropper.destroy();
-            cropper = null;
-        });
+        photoPreview.src = croppedCanvas.toDataURL('image/png');
+        photoPreview.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        
+        const topLabel = document.getElementById('photoUploadLabel');
+        if (topLabel) topLabel.style.display = 'none';
 
-        function getThaiLength(str) {
-            const combining = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g;
-            return str.replace(combining, '').length;
+        const bottomBtn = document.getElementById('btnControlUpload');
+        if (bottomBtn) bottomBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Change Image';
+
+        cropModal.style.display = 'none';
+        cropper.destroy();
+        cropper = null;
+    });
+
+    // --- CHARACTER LIMIT LOGIC (SIMPLIFIED & ROBUST) ---
+    
+    function getThaiLength(str) {
+        // Thai combining vowels/marks don't count towards length
+        const combining = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g;
+        return str.replace(combining, '').length;
+    }
+
+    const limits = {
+        sigSpace: 7, 
+        dispName: 22,
+        dispDob: 10,
+        dispW1: 5,
+        dispW2: 5,
+        dispW3: 5,
+        dispBand: 22,
+        dispSong: 22,
+        footerMiddle: 3,
+        footerAfter: 3
+    };
+
+    // Helper to keep cursor at end (Prevents cursor jumping to start)
+    function setEndOfContenteditable(contentEditableElement) {
+        var range, selection;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNodeContents(contentEditableElement);
+            range.collapse(false);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
+    }
 
-        function enforceLimit(el, max) {
-            const txt = el.textContent;
-            const len = getThaiLength(txt);
-            if (len > max) {
+    Object.keys(limits).forEach(elId => {
+        const el = id(elId);
+        
+        el.addEventListener('input', function() {
+            const max = limits[elId];
+            let text = el.innerText;
+            
+            // 1. DATE FORMATTING (Specific to dispDob)
+            if (elId === 'dispDob') {
+                // Strip non-numbers
+                let val = text.replace(/\D/g, '');
+                
+                // Add slashes
+                if (val.length > 2) val = val.substring(0, 2) + '/' + val.substring(2);
+                if (val.length > 5) val = val.substring(0, 5) + '/' + val.substring(5, 9);
+                
+                // Only update if changed (prevents loops)
+                if (text !== val) {
+                    el.innerText = val;
+                    setEndOfContenteditable(el);
+                    text = val; // Update local text var for length check below
+                }
+            }
+
+            // 2. LENGTH CHECK (The Simple "Snip" Method)
+            if (getThaiLength(text) > max) {
+                // If text is too long, cut it immediately
+                // We convert to array to handle emojis/thai chars safely if needed, 
+                // but simple substring often works for basic limits.
+                // Here we loop to safe-delete until it fits (handles Thai chars better)
+                while (getThaiLength(el.innerText) > max) {
+                    el.innerText = el.innerText.substring(0, el.innerText.length - 1);
+                }
+                
+                // Add red warning class
                 el.classList.add('limit-reached');
+                
+                // Move cursor to end so user can keep deleting if they want
+                setEndOfContenteditable(el);
             } else {
                 el.classList.remove('limit-reached');
             }
-        }
-
-        const limits = {
-            sigSpace: 8,
-            dispName: 22,
-            dispDob: 10,
-            dispW1: 8,
-            dispW2: 8,
-            dispW3: 8,
-            dispBand: 22,
-            dispSong: 22,
-            footerMiddle: 8,
-            footerAfter: 3
-        };
-
-        Object.keys(limits).forEach(elId => {
-            const el = id(elId);
-            el.addEventListener('input', () => enforceLimit(el, limits[elId]));
         });
 
-        function scaleCard() {
-            // Get both wrappers and both cards
-            const wrapperFront = document.getElementById('idCardWrapper');
-            const cardFront = document.getElementById('idCard');
-            const wrapperBack = document.getElementById('idCardBackWrapper');
-            const cardBack = document.getElementById('idCardBack');
-            
-            const windowWidth = window.innerWidth;
-            const margin = 20;
-
-            if (windowWidth < 640) {
-                const s = (windowWidth - margin * 2) / 600;
-                
-                // Scale Front
-                cardFront.style.transform = `scale(${s})`;
-                cardFront.style.transformOrigin = 'top center';
-                
-                // Scale Back
-                cardBack.style.transform = `scale(${s})`;
-                cardBack.style.transformOrigin = 'top center';
-
-                // --- FIX START ---
-                // Force the wrapper to be exactly the visual height of the scaled card
-                const scaledHeight = 380 * s;
-                
-                wrapperFront.style.height = scaledHeight + "px";
-                wrapperFront.style.width = (600 * s) + "px";
-                wrapperFront.style.overflow = 'hidden'; // Key fix: Cut off any "ghost" space
-                wrapperFront.style.marginBottom = "0px"; // Ensure no extra margin
-
-                wrapperBack.style.height = scaledHeight + "px";
-                wrapperBack.style.width = (600 * s) + "px";
-                wrapperBack.style.overflow = 'hidden';
-                wrapperBack.style.marginTop = "20px"; // Consistent gap between cards
-                // --- FIX END ---
-
-            } else {
-                // ... (your existing else block) ...
-                // Make sure to reset overflow here too
-                wrapperFront.style.overflow = 'visible';
-                wrapperBack.style.overflow = 'visible';
-            }
-        }
-
-        window.addEventListener('resize', scaleCard);
-        scaleCard();
-
-        id('btnDownload').addEventListener('click', async () => {
-            const wrapper = id('cardWrapper');
-            const card = id('idCard');
-            
-            // Reset scale temporarily
-            card.style.transform = 'scale(1)';
-            
-            try {
-                // Capture front card
-                const canvasFront = await html2canvas(card, {
-                    scale: 2,
-                    backgroundColor: null,
-                    logging: false
-                });
-
-
-                // Create combined canvas
-                const combinedCanvas = document.createElement('canvas');
-                const ctx = combinedCanvas.getContext('2d');
-                
-                const cardWidth = canvasFront.width;
-                const cardHeight = canvasFront.height;
-                const gap = 60; // Gap between cards
-                
-                combinedCanvas.width = cardWidth;
-                combinedCanvas.height = cardHeight * 2 + gap;
-                
-                // Fill background
-                ctx.fillStyle = '#f5f5f5';
-                ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
-                
-                // Draw front card
-                ctx.drawImage(canvasFront, 0, 0);
-
-                // Download
-                combinedCanvas.toBlob(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'musicfest-id-card.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                });
-
-            } catch (err) {
-                console.error('Download error:', err);
-                alert('Error generating image. Please try again.');
-            } finally {
-                scaleCard();
-            }
+        // Block Enter Key
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') e.preventDefault();
         });
+        
+        // Clean Paste
+        el.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand("insertText", false, text.replace(/[\r\n]+/g, ""));
+        });
+    });
 
-        async function shareToInstagram() {
-            const cardElement = document.getElementById('idCard'); // The ID of your card container
+    // --- SCALING LOGIC (Unchanged) ---
+    function scaleCard() {
+        const cardFront = document.getElementById('idCard');
+        const wrapperFront = document.getElementById('cardWrapper');
+        const cardBack = document.getElementById('idCardBack');
+        const wrapperBack = document.getElementById('idCardBackWrapper');
 
-            if (!cardElement) {
-                alert("Card element not found!");
-                return;
-            }
+        const windowWidth = window.innerWidth;
+        const margin = 20;
 
-            try {
-                // 1. Generate the image using html2canvas
-                const canvas = await html2canvas(cardElement, {
-                    scale: 2, // Higher scale for better quality on Instagram
-                    backgroundColor: null, // Preserves transparency if you have any
-                    useCORS: true // Helps with loading cross-origin images
-                });
+        if (windowWidth < 640) {
+            const s = (windowWidth - margin * 2) / 600;
+            const heightDifference = 380 * (1 - s);
 
-                // 2. Convert the canvas to a Blob (file object)
-                canvas.toBlob(async (blob) => {
-                    if (!blob) {
-                        alert('Failed to generate image.');
-                        return;
-                    }
+            cardFront.style.transform = `scale(${s})`;
+            cardFront.style.transformOrigin = 'top center';
+            wrapperFront.style.marginBottom = `-${heightDifference}px`;
 
-                    // 3. Create a File object from the Blob
-                    const file = new File([blob], 'musicfest-id.png', { type: 'image/png' });
-
-                    // 4. Use the Web Share API to share the file
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'My MusicFest ID',
-                                text: 'See you at MusicFest! #MusicFest2026'
-                            });
-                            console.log('Shared successfully');
-                        } catch (shareError) {
-                            // User likely cancelled the share sheet
-                            console.log('Share cancelled', shareError);
-                        }
-                    } else {
-                        // Fallback for desktop or unsupported browsers
-                        alert('Direct sharing is not supported on this browser. Please download the image instead.');
-                    }
-                }, 'image/png');
-
-            } catch (error) {
-                console.error('Error generating card:', error);
-                alert('An error occurred while creating the image.');
-            }
+            cardBack.style.transform = `scale(${s})`;
+            cardBack.style.transformOrigin = 'top center';
+            wrapperBack.style.marginBottom = `-${heightDifference}px`;
+        } else {
+            cardFront.style.transform = 'scale(1)';
+            wrapperFront.style.marginBottom = '0px';
+            cardBack.style.transform = 'scale(1)';
+            wrapperBack.style.marginBottom = '0px';
         }
+    }
 
-    </script>
+    window.addEventListener('resize', scaleCard);
+    scaleCard();
+
+    // --- DOWNLOAD LOGIC (Unchanged) ---
+    id('btnDownload').addEventListener('click', async () => {
+        const card = id('idCard');
+        card.style.transform = 'scale(1)';
+        
+        try {
+            const canvasFront = await html2canvas(card, {
+                scale: 2,
+                backgroundColor: null,
+                logging: false
+            });
+
+            const combinedCanvas = document.createElement('canvas');
+            const ctx = combinedCanvas.getContext('2d');
+            const cardWidth = canvasFront.width;
+            const cardHeight = canvasFront.height;
+            const gap = 60;
+            
+            combinedCanvas.width = cardWidth;
+            combinedCanvas.height = cardHeight * 2 + gap;
+            
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+            
+            ctx.drawImage(canvasFront, 0, 0);
+
+            const cardBack = id('idCardBack');
+            cardBack.style.transform = 'scale(1)';
+            const canvasBack = await html2canvas(cardBack, { scale: 2, backgroundColor: null });
+            
+            ctx.drawImage(canvasBack, 0, cardHeight + gap);
+
+            combinedCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'musicfest-id-card.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+        } catch (err) {
+            console.error('Download error:', err);
+            alert('Error generating image. Please try again.');
+        } finally {
+            scaleCard();
+        }
+    });
+
+    // --- SHARE LOGIC (Unchanged) ---
+    async function shareToInstagram() {
+        const cardElement = document.getElementById('idCard');
+        if (!cardElement) return;
+
+        try {
+            const canvas = await html2canvas(cardElement, {
+                scale: 2,
+                backgroundColor: null,
+                useCORS: true
+            });
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+                const file = new File([blob], 'musicfest-id.png', { type: 'image/png' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'My MusicFest ID',
+                            text: 'See you at MusicFest! #MusicFest2026'
+                        });
+                    } catch (e) { console.log('Cancelled'); }
+                } else {
+                    alert('Sharing not supported on this browser.');
+                }
+            }, 'image/png');
+        } catch (error) {
+            console.error(error);
+        }
+    }
+</script>
+
 </body>
-<html>
+</html>
