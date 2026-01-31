@@ -843,12 +843,31 @@
         wrapperBack.style.width = CARD_WIDTH + 'px';
         wrapperBack.style.overflow = 'visible';
 
-        try {
-            const captured = await html2canvas(downloadArea, {
-                scale: 2,
+        // Let layout paint (helps Safari/iOS avoid "Error generating image")
+        await new Promise(r => requestAnimationFrame(r));
+        await new Promise(r => setTimeout(r, 50));
+
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        function runCapture(scale) {
+            return html2canvas(downloadArea, {
+                scale: scale,
                 backgroundColor: '#f0f0f0',
-                logging: false
+                logging: false,
+                useCORS: true,
+                allowTaint: false,
+                imageTimeout: 15000
             });
+        }
+
+        let captured;
+        try {
+            try {
+                captured = await runCapture(isIOS ? 1 : 2);
+            } catch (firstErr) {
+                console.warn('Download first attempt failed, retrying with scale 1:', firstErr);
+                captured = await runCapture(1);
+            }
 
             // 9:16 portrait (e.g. 1080x1920 for stories/reels)
             const outW = 1080;
