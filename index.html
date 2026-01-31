@@ -463,9 +463,19 @@
             display: none;
         }
 
-        h1, h2 {
+        h1 {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             text-align: center;
+            margin-bottom: -10px; /* Pulls the next element UP by 10px */
+            line-height: 1.2;     /* Reduces vertical spread */
+            padding-bottom: 0;
+        }
+
+        h2 {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            text-align: center;
+            margin-top: 0;
+            line-height: 1.2;
         }
 
         @media (max-width: 640px) {
