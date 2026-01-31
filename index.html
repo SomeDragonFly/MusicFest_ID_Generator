@@ -849,6 +849,17 @@
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+        // Strip Safari-breaking CSS in the clone (filter, mix-blend-mode) so html2canvas can render
+        function sanitizeClone(clonedDoc) {
+            const stars = clonedDoc.querySelectorAll && clonedDoc.querySelectorAll('.star, .star-red');
+            if (stars && stars.length) {
+                stars.forEach(el => {
+                    el.style.filter = 'none';
+                    el.style.mixBlendMode = 'normal';
+                });
+            }
+        }
+
         function runCapture(scale) {
             return html2canvas(downloadArea, {
                 scale: scale,
@@ -856,36 +867,91 @@
                 logging: false,
                 useCORS: true,
                 allowTaint: false,
-                imageTimeout: 15000
+                imageTimeout: 15000,
+                onclone: (clonedDoc, clonedEl) => { sanitizeClone(clonedDoc); }
             });
         }
 
-        let captured;
-        try {
-            try {
-                captured = await runCapture(isIOS ? 1 : 2);
-            } catch (firstErr) {
-                console.warn('Download first attempt failed, retrying with scale 1:', firstErr);
-                captured = await runCapture(1);
-            }
+        // iOS fallback: capture cards and headings separately (smaller canvases = fewer Safari failures)
+        async function captureIOSFallback() {
+            const h1s = downloadArea.querySelectorAll('h1');
+            const h2el = downloadArea.querySelector('h2');
+            const headText1 = (h1s[0] && h1s[0].textContent) || "You're still young";
+            const headText2 = (h1s[1] && h1s[1].textContent) || "TSS Music Festival 2026";
+            const headText3 = (h2el && h2el.textContent) || "Young You";
 
-            // 9:16 portrait (e.g. 1080x1920 for stories/reels)
-            const outW = 1080;
-            const outH = 1920;
-            const combinedCanvas = document.createElement('canvas');
-            combinedCanvas.width = outW;
-            combinedCanvas.height = outH;
-            const ctx = combinedCanvas.getContext('2d');
+            const headDiv = document.createElement('div');
+            headDiv.style.cssText = 'position:absolute;left:-9999px;width:600px;background:#f0f0f0;padding:20px 0;text-align:center;font-family:\'IBM Plex Sans Thai\',sans-serif;box-sizing:border-box;';
+            headDiv.innerHTML = '<h1 style="margin:0 0 -30px 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText1 + '</h1><h1 style="margin:16px 0 0 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText2 + '</h1><h2 style="margin:4px 0 0 0;line-height:1.2;font-size:18px;">' + headText3 + '</h2>';
+            document.body.appendChild(headDiv);
 
+            const opts = { scale: 1, backgroundColor: '#f0f0f0', logging: false, useCORS: true, onclone: (doc) => sanitizeClone(doc) };
+            const [headCanvas, frontCanvas, backCanvas] = await Promise.all([
+                html2canvas(headDiv, opts),
+                html2canvas(card, opts),
+                html2canvas(cardBack, opts)
+            ]);
+            headDiv.remove();
+
+            const outW = 1080, outH = 1920, gap = 24;
+            const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + backCanvas.height + gap + 60;
+            const contentW = Math.max(headCanvas.width, frontCanvas.width, backCanvas.width);
+            const scale = Math.min(outW / contentW, outH / totalContentH);
+            const drawW = contentW * scale;
+            const drawH = totalContentH * scale;
+            let y = (outH - drawH) / 2;
+            const x = (outW - drawW) / 2;
+
+            const combined = document.createElement('canvas');
+            combined.width = outW;
+            combined.height = outH;
+            const ctx = combined.getContext('2d');
             ctx.fillStyle = '#f0f0f0';
             ctx.fillRect(0, 0, outW, outH);
 
-            const scale = Math.min(outW / captured.width, outH / captured.height);
-            const drawW = captured.width * scale;
-            const drawH = captured.height * scale;
-            const x = (outW - drawW) / 2;
-            const y = (outH - drawH) / 2;
-            ctx.drawImage(captured, x, y, drawW, drawH);
+            ctx.drawImage(headCanvas, x, y, headCanvas.width * scale, headCanvas.height * scale);
+            y += headCanvas.height * scale + gap * scale;
+            ctx.drawImage(frontCanvas, x, y, frontCanvas.width * scale, frontCanvas.height * scale);
+            y += frontCanvas.height * scale + gap * scale;
+            ctx.drawImage(backCanvas, x, y, backCanvas.width * scale, backCanvas.height * scale);
+
+            return combined;
+        }
+
+        let combinedCanvas;
+        try {
+            let captured;
+            try {
+                captured = await runCapture(isIOS ? 1 : 2);
+            } catch (firstErr) {
+                if (isIOS) {
+                    console.warn('Full capture failed on iOS, using fallback:', firstErr);
+                    combinedCanvas = await captureIOSFallback();
+                } else {
+                    try {
+                        captured = await runCapture(1);
+                    } catch (secondErr) {
+                        throw secondErr;
+                    }
+                }
+            }
+
+            if (!combinedCanvas) {
+                const outW = 1080;
+                const outH = 1920;
+                combinedCanvas = document.createElement('canvas');
+                combinedCanvas.width = outW;
+                combinedCanvas.height = outH;
+                const ctx = combinedCanvas.getContext('2d');
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fillRect(0, 0, outW, outH);
+                const scale = Math.min(outW / captured.width, outH / captured.height);
+                const drawW = captured.width * scale;
+                const drawH = captured.height * scale;
+                const x = (outW - drawW) / 2;
+                const y = (outH - drawH) / 2;
+                ctx.drawImage(captured, x, y, drawW, drawH);
+            }
 
             combinedCanvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
