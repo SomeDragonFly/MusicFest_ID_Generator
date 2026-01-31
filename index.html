@@ -257,6 +257,7 @@
             flex-shrink: 0;
             margin-top: 10px;
             position: relative;
+            z-index: 10;
         }
 
         #photoPreview {
@@ -292,12 +293,12 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 9px;
             margin-top: 10px;
         }
 
         .field-row {
-            padding-bottom: 6px;
+            padding-bottom: 2px;
             display: flex;
             align-items: baseline;
             gap: 10px
@@ -382,10 +383,10 @@
 
         .footer-text-head {
             position: absolute;
-            bottom: 66px;
-            right: 236px;
+            bottom: 84px;
+            right: 200px;
             font-family: 'IBM Plex Sans Thai', sans-serif;
-            font-size: 11px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -466,21 +467,38 @@
         h1 {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             text-align: center;
-            margin-bottom: -10px; /* Pulls the next element UP by 10px */
-            line-height: 1.2;     /* Reduces vertical spread */
+            margin-bottom: -30px; /* Pulls the next element UP by 10px */
+            line-height: 1;     /* Reduces vertical spread */
             padding-bottom: 0;
+            font-size: 24px;
         }
 
         h2 {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             text-align: center;
-            margin-top: 0;
+            margin-top: 1;
             line-height: 1.2;
+            font-size: 18px;
         }
 
         @media (max-width: 640px) {
             .cards-stack { gap: 10px; }
             .btn { font-size: 14px; padding: 8px 16px; }
+        }
+
+        /* Placeholder dots for empty editable fields */
+        #dispW1:empty::before,
+        #dispW2:empty::before,
+        #dispW3:empty::before {
+            content: "......";  /* The dots you want to see */
+            color: #000000;        /* Light grey color */
+            pointer-events: none; /* Allows click to pass through to the input */
+        }
+
+        /* Optional: Ensure the field has layout so it's clickable */
+        #dispW1, #dispW2, #dispW3 {
+            min-width: 30px;    /* Minimum width to ensure touch target */
+            display: inline-block;
         }
     </style>
 </head>
