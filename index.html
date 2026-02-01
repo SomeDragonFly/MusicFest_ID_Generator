@@ -47,7 +47,7 @@
 
         /* --- WRAPPERS (KEY MOBILE FIX) --- */
         /* This ensures the wrappers don't force the page to be 600px wide */
-        #cardWrapper, #idCardBackWrapper {
+        #cardWrapper {
             position: relative;
             margin: 0 auto;
             max-width: 600px;
@@ -58,9 +58,8 @@
             overflow: hidden; /* CRITICAL: Hides the "ghost" width of scaled elements */
         }
 
-        /* Add top margin specifically to wrappers, handled by JS scaling */
+        /* Add top margin specifically to wrapper, handled by JS scaling */
         #cardWrapper { margin-top: 20px; }
-        #idCardBackWrapper { margin-top: 20px; }
 
         /* Wrapper for download capture: headings + cards only (no controls) */
         #downloadArea {
@@ -135,22 +134,6 @@
             
             background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23666958' fill-opacity='0.35'%3E%3Ccircle cx='1' cy='1' r='0.9'/%3E%3Ccircle cx='8' cy='8' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
             background-repeat: repeat;
-        }
-
-        #idCardBack {
-            width: 600px;
-            height: 380px;
-            position: relative;
-            z-index: 1;
-            background: transparent;
-            flex-shrink: 0;
-        }
-
-        .back-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
         }
 
         .star {
@@ -601,13 +584,6 @@
         </div>
     </div>
 
-    <!-- BACK CARD WRAPPER -->
-    <div id="idCardBackWrapper">
-        <div id="idCardBack">
-            <img src="image.png" class="back-img" crossorigin="anonymous" alt="">
-        </div>
-    </div>
-
         <h1>TSS Music Festival 2026</h1>
         <h2>Young You</h2>
     </div>
@@ -780,12 +756,10 @@
         });
     });
 
-    // --- SCALING LOGIC (Unchanged) ---
+    // --- SCALING LOGIC ---
     function scaleCard() {
         const cardFront = document.getElementById('idCard');
         const wrapperFront = document.getElementById('cardWrapper');
-        const cardBack = document.getElementById('idCardBack');
-        const wrapperBack = document.getElementById('idCardBackWrapper');
 
         const windowWidth = window.innerWidth;
         const margin = 20;
@@ -797,15 +771,9 @@
             cardFront.style.transform = `scale(${s})`;
             cardFront.style.transformOrigin = 'top center';
             wrapperFront.style.marginBottom = `-${heightDifference}px`;
-
-            cardBack.style.transform = `scale(${s})`;
-            cardBack.style.transformOrigin = 'top center';
-            wrapperBack.style.marginBottom = `-${heightDifference}px`;
         } else {
             cardFront.style.transform = 'scale(1)';
             wrapperFront.style.marginBottom = '0px';
-            cardBack.style.transform = 'scale(1)';
-            wrapperBack.style.marginBottom = '0px';
         }
     }
 
@@ -816,32 +784,24 @@
     id('btnDownload').addEventListener('click', async () => {
         const downloadArea = id('downloadArea');
         const card = id('idCard');
-        const cardBack = id('idCardBack');
         const wrapperFront = id('cardWrapper');
-        const wrapperBack = id('idCardBackWrapper');
 
         // Restore full size for capture
         card.style.transform = 'scale(1)';
-        cardBack.style.transform = 'scale(1)';
         wrapperFront.style.marginBottom = '0px';
-        wrapperBack.style.marginBottom = '0px';
 
-        // On mobile, wrappers are viewport-width with overflow:hidden → sides get clipped.
-        // Temporarily force full 600px width and visible overflow so capture includes full cards.
+        // On mobile, wrapper is viewport-width with overflow:hidden → sides get clipped.
+        // Temporarily force full 600px width and visible overflow so capture includes full card.
         const CARD_WIDTH = 600;
         const savedAreaWidth = downloadArea.style.width;
         const savedAreaMaxWidth = downloadArea.style.maxWidth;
         const savedWrap1Width = wrapperFront.style.width;
         const savedWrap1Overflow = wrapperFront.style.overflow;
-        const savedWrap2Width = wrapperBack.style.width;
-        const savedWrap2Overflow = wrapperBack.style.overflow;
 
         downloadArea.style.width = CARD_WIDTH + 'px';
         downloadArea.style.maxWidth = CARD_WIDTH + 'px';
         wrapperFront.style.width = CARD_WIDTH + 'px';
         wrapperFront.style.overflow = 'visible';
-        wrapperBack.style.width = CARD_WIDTH + 'px';
-        wrapperBack.style.overflow = 'visible';
 
         // Let layout paint (helps Safari/iOS avoid "Error generating image")
         await new Promise(r => requestAnimationFrame(r));
@@ -887,7 +847,7 @@
             });
         }
 
-        // iOS fallback: capture cards and headings separately (smaller canvases = fewer Safari failures)
+        // iOS fallback: capture card and headings separately (smaller canvases = fewer Safari failures)
         async function captureIOSFallback() {
             const h1s = downloadArea.querySelectorAll('h1');
             const h2el = downloadArea.querySelector('h2');
@@ -901,16 +861,15 @@
             document.body.appendChild(headDiv);
 
             const opts = { scale: 1, backgroundColor: '#f0f0f0', logging: false, useCORS: true, allowTaint: true, onclone: (doc) => sanitizeClone(doc) };
-            const [headCanvas, frontCanvas, backCanvas] = await Promise.all([
+            const [headCanvas, frontCanvas] = await Promise.all([
                 html2canvas(headDiv, opts),
-                html2canvas(card, opts),
-                html2canvas(cardBack, opts)
+                html2canvas(card, opts)
             ]);
             headDiv.remove();
 
             const outW = 1080, outH = 1920, gap = 24;
-            const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + backCanvas.height + gap + 60;
-            const contentW = Math.max(headCanvas.width, frontCanvas.width, backCanvas.width);
+            const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + 60;
+            const contentW = Math.max(headCanvas.width, frontCanvas.width);
             const scale = Math.min(outW / contentW, outH / totalContentH);
             const drawW = contentW * scale;
             const drawH = totalContentH * scale;
@@ -927,8 +886,6 @@
             ctx.drawImage(headCanvas, x, y, headCanvas.width * scale, headCanvas.height * scale);
             y += headCanvas.height * scale + gap * scale;
             ctx.drawImage(frontCanvas, x, y, frontCanvas.width * scale, frontCanvas.height * scale);
-            y += frontCanvas.height * scale + gap * scale;
-            ctx.drawImage(backCanvas, x, y, backCanvas.width * scale, backCanvas.height * scale);
 
             return combined;
         }
@@ -985,8 +942,6 @@
             downloadArea.style.maxWidth = savedAreaMaxWidth;
             wrapperFront.style.width = savedWrap1Width;
             wrapperFront.style.overflow = savedWrap1Overflow;
-            wrapperBack.style.width = savedWrap2Width;
-            wrapperBack.style.overflow = savedWrap2Overflow;
             scaleCard(); // restore scaling and wrapper margins
         }
     });
