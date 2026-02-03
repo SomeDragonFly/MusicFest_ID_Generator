@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>MusicFest ID Card</title>
     <meta charset="utf-8" />
@@ -42,11 +41,9 @@
             min-height: 100vh;
             gap: 16px;
             padding-top: 20px;
-            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+            overflow-x: hidden;
         }
 
-        /* --- WRAPPERS (KEY MOBILE FIX) --- */
-        /* This ensures the wrappers don't force the page to be 600px wide */
         #cardWrapper {
             position: relative;
             margin: 0 auto;
@@ -55,13 +52,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow: hidden; /* CRITICAL: Hides the "ghost" width of scaled elements */
+            overflow: hidden;
         }
 
-        /* Add top margin specifically to wrapper, handled by JS scaling */
         #cardWrapper { margin-top: 20px; }
 
-        /* Wrapper for download capture: headings + cards only (no controls) */
         #downloadArea {
             display: flex;
             flex-direction: column;
@@ -74,7 +69,6 @@
             box-sizing: border-box;
         }
 
-        /* --- CROPPER MODAL STYLES --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -118,7 +112,6 @@
             justify-content: flex-end;
         }
 
-        /* --- ID CARD STYLES --- */
         #idCard {
             width: 600px;
             height: 380px;
@@ -131,7 +124,6 @@
             flex-direction: column;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0);
             flex-shrink: 0;
-            
             background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23666958' fill-opacity='0.35'%3E%3Ccircle cx='1' cy='1' r='0.9'/%3E%3Ccircle cx='8' cy='8' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
             background-repeat: repeat;
         }
@@ -384,10 +376,9 @@
             font-weight: bold;
         }
 
-        /* --- CONTROLS & BUTTONS --- */
         .controls {
             display: flex;
-            flex-wrap: wrap;       /* ALLOW WRAPPING */
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             gap: 12px;
@@ -409,7 +400,7 @@
             font-size: 16px;
             cursor: pointer;
             transition: transform 0.1s;
-            display: inline-flex;  /* Keeps icon and text together */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
@@ -461,8 +452,8 @@
         h1 {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             text-align: center;
-            margin-bottom: -30px; /* Pulls the next element UP by 10px */
-            line-height: 1;     /* Reduces vertical spread */
+            margin-bottom: -30px;
+            line-height: 1;
             padding-bottom: 0;
             font-size: 24px;
         }
@@ -480,109 +471,106 @@
             .btn { font-size: 14px; padding: 8px 16px; }
         }
 
-        /* Placeholder dots for empty editable fields */
         #dispW1:empty::before,
         #dispW2:empty::before,
         #dispW3:empty::before {
-            content: "......";  /* The dots you want to see */
-            color: #000000;        /* Light grey color */
-            pointer-events: none; /* Allows click to pass through to the input */
+            content: "......";
+            color: #000000;
+            pointer-events: none;
         }
 
-        /* Optional: Ensure the field has layout so it's clickable */
         #dispW1, #dispW2, #dispW3 {
-            min-width: 30px;    /* Minimum width to ensure touch target */
+            min-width: 30px;
             display: inline-block;
         }
     </style>
 </head>
 
 <body>
-
     <div id="downloadArea">
         <h1>You’re still young</h1>
 
-    <!-- Hidden Crop Modal -->
-    <div class="modal-overlay" id="cropModal">
-        <div class="modal-content">
-            <h3 style="margin:0;">Adjust Photo</h3>
-            <div class="crop-container">
-                <img id="imageToCrop" src="">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" id="btnCancelCrop">Cancel</button>
-                <button class="btn" id="btnApplyCrop">Crop & Use</button>
+        <!-- Hidden Crop Modal -->
+        <div class="modal-overlay" id="cropModal">
+            <div class="modal-content">
+                <h3 style="margin:0;">Adjust Photo</h3>
+                <div class="crop-container">
+                    <img id="imageToCrop" src="">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" id="btnCancelCrop">Cancel</button>
+                    <button class="btn" id="btnApplyCrop">Crop & Use</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- FRONT CARD WRAPPER -->
-    <div id="cardWrapper">
-        <div id="idCard">
-            <div class="star star-green">★</div>
-            <div id="headerDate">13 FEB 2026</div>
-            <div class="star-red-container">
-                <div class="star star-red">★</div>
-            </div>
-            <div class="star star-blue">★</div>
-
-            <div class="header-bar">
-                <div class="header-text">
-                    I <span id="sigSpace" class="editable-inline" contenteditable="true"></span> Card
+        <!-- FRONT CARD WRAPPER -->
+        <div id="cardWrapper">
+            <div id="idCard">
+                <div class="star star-green">★</div>
+                <div id="headerDate">13 FEB 2026</div>
+                <div class="star-red-container">
+                    <div class="star star-red">★</div>
                 </div>
-            </div>
+                <div class="star star-blue">★</div>
 
-            <div class="card-body">
-                <div class="photo-area">
-                    <img id="photoPreview" src="">
-                    <span id="photoPlaceholder"></span>
-                    <label for="imgInput" class="photo-upload-label" id="photoUploadLabel">Upload photo</label>
+                <div class="header-bar">
+                    <div class="header-text">
+                        I <span id="sigSpace" class="editable-inline" contenteditable="true"></span> Card
+                    </div>
                 </div>
 
-                <div class="info-area">
-                    <div class="field-row">
-                        <span class="field-label">มายเนมอีส:</span>
-                        <span class="field-value editable-inline" id="dispName" contenteditable="true"></span>
+                <div class="card-body">
+                    <div class="photo-area">
+                        <img id="photoPreview" src="">
+                        <span id="photoPlaceholder"></span>
+                        <label for="imgInput" class="photo-upload-label" id="photoUploadLabel">Upload photo</label>
                     </div>
-                    <div class="field-row">
-                        <span class="field-label">วันที่คลอด:</span>
-                        <span class="field-value dob editable-inline" id="dispDob" contenteditable="true"></span>
-                    </div>
-                    <div class="field-row">
-                        <span class="field-label">3 คำเด็ด:</span>
-                        <span class="field-value">
-                            <span class="editable-inline" id="dispW1" contenteditable="true"></span> /
-                            <span class="editable-inline" id="dispW2" contenteditable="true"></span> /
-                            <span class="editable-inline" id="dispW3" contenteditable="true"></span>
-                        </span>
-                    </div>
-                    <div class="field-row">
-                        <span class="field-label">วงที่ชอบ:</span>
-                        <span class="field-value editable-inline" id="dispBand" contenteditable="true"></span>
-                    </div>
-                    <div class="field-row">
-                        <span class="field-label">เพลงโปรด:</span>
-                        <span class="field-value editable-inline" id="dispSong" contenteditable="true"></span>
+
+                    <div class="info-area">
+                        <div class="field-row">
+                            <span class="field-label">มายเนมอีส:</span>
+                            <span class="field-value editable-inline" id="dispName" contenteditable="true"></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="field-label">วันที่คลอด:</span>
+                            <span class="field-value dob editable-inline" id="dispDob" contenteditable="true"></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="field-label">3 คำเด็ด:</span>
+                            <span class="field-value">
+                                <span class="editable-inline" id="dispW1" contenteditable="true"></span> /
+                                <span class="editable-inline" id="dispW2" contenteditable="true"></span> /
+                                <span class="editable-inline" id="dispW3" contenteditable="true"></span>
+                            </span>
+                        </div>
+                        <div class="field-row">
+                            <span class="field-label">วงที่ชอบ:</span>
+                            <span class="field-value editable-inline" id="dispBand" contenteditable="true"></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="field-label">เพลงโปรด:</span>
+                            <span class="field-value editable-inline" id="dispSong" contenteditable="true"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="footer-text-wrapper">
-                <span id="footerMiddle" class="editable-inline" contenteditable="true"></span>
-                <span class="label-yang">ยัง</span>
-                <span id="footerAfter" class="editable-inline" contenteditable="true"></span>
-                <span class="label-yuu">อยู่</span>
-            </div>
+                <div class="footer-text-wrapper">
+                    <span id="footerMiddle" class="editable-inline" contenteditable="true"></span>
+                    <span class="label-yang">ยัง</span>
+                    <span id="footerAfter" class="editable-inline" contenteditable="true"></span>
+                    <span class="label-yuu">อยู่</span>
+                </div>
 
-            <div class="footer-message">
-                <div class="footer-line-top">Who once holds this card always a</div>
-                <div class="footer-young">“YOUNG”</div>
-            </div>
+                <div class="footer-message">
+                    <div class="footer-line-top">Who once holds this card always a</div>
+                    <div class="footer-young">“YOUNG”</div>
+                </div>
 
-            <div class="footer-text-head">"อยากจะบอกตัวเองไว้ว่า"</div>
-            <div class="footer-bar"></div>
+                <div class="footer-text-head">"อยากจะบอกตัวเองไว้ว่า"</div>
+                <div class="footer-bar"></div>
+            </div>
         </div>
-    </div>
 
         <h1>TSS Music Festival 2026</h1>
         <h2>Young You</h2>
@@ -620,7 +608,10 @@
 
     let cropper = null;
 
-    // --- IMAGE LOGIC (Unchanged) ---
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);  // iPadOS on Mac UA[web:8]
+
+    // IMAGE LOGIC
     imgInput.addEventListener('change', (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
@@ -653,7 +644,7 @@
         photoPreview.src = croppedCanvas.toDataURL('image/png');
         photoPreview.style.display = 'block';
         photoPlaceholder.style.display = 'none';
-        
+
         const topLabel = document.getElementById('photoUploadLabel');
         if (topLabel) topLabel.style.display = 'none';
 
@@ -665,16 +656,14 @@
         cropper = null;
     });
 
-    // --- CHARACTER LIMIT LOGIC (SIMPLIFIED & ROBUST) ---
-    
+    // CHARACTER LIMITS
     function getThaiLength(str) {
-        // Thai combining vowels/marks don't count towards length
         const combining = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g;
         return str.replace(combining, '').length;
     }
 
     const limits = {
-        sigSpace: 7, 
+        sigSpace: 7,
         dispName: 22,
         dispDob: 10,
         dispW1: 5,
@@ -686,7 +675,6 @@
         footerAfter: 3
     };
 
-    // Helper to keep cursor at end (Prevents cursor jumping to start)
     function setEndOfContenteditable(contentEditableElement) {
         var range, selection;
         if (document.createRange) {
@@ -701,54 +689,37 @@
 
     Object.keys(limits).forEach(elId => {
         const el = id(elId);
-        
+
         el.addEventListener('input', function() {
             const max = limits[elId];
             let text = el.innerText;
-            
-            // 1. DATE FORMATTING (Specific to dispDob)
+
             if (elId === 'dispDob') {
-                // Strip non-numbers
                 let val = text.replace(/\D/g, '');
-                
-                // Add slashes
                 if (val.length > 2) val = val.substring(0, 2) + '/' + val.substring(2);
                 if (val.length > 5) val = val.substring(0, 5) + '/' + val.substring(5, 9);
-                
-                // Only update if changed (prevents loops)
                 if (text !== val) {
                     el.innerText = val;
                     setEndOfContenteditable(el);
-                    text = val; // Update local text var for length check below
+                    text = val;
                 }
             }
 
-            // 2. LENGTH CHECK (The Simple "Snip" Method)
             if (getThaiLength(text) > max) {
-                // If text is too long, cut it immediately
-                // We convert to array to handle emojis/thai chars safely if needed, 
-                // but simple substring often works for basic limits.
-                // Here we loop to safe-delete until it fits (handles Thai chars better)
                 while (getThaiLength(el.innerText) > max) {
                     el.innerText = el.innerText.substring(0, el.innerText.length - 1);
                 }
-                
-                // Add red warning class
                 el.classList.add('limit-reached');
-                
-                // Move cursor to end so user can keep deleting if they want
                 setEndOfContenteditable(el);
             } else {
                 el.classList.remove('limit-reached');
             }
         });
 
-        // Block Enter Key
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') e.preventDefault();
         });
-        
-        // Clean Paste
+
         el.addEventListener('paste', (e) => {
             e.preventDefault();
             const text = (e.clipboardData || window.clipboardData).getData('text');
@@ -756,7 +727,7 @@
         });
     });
 
-    // --- SCALING LOGIC ---
+    // SCALING
     function scaleCard() {
         const cardFront = document.getElementById('idCard');
         const wrapperFront = document.getElementById('cardWrapper');
@@ -780,18 +751,30 @@
     window.addEventListener('resize', scaleCard);
     scaleCard();
 
-    // --- DOWNLOAD LOGIC: whole screen (headings + cards) in 9:16, no controls ---
+    // SANITIZE CLONE FOR HTML2CANVAS (iOS friendly)[web:8][web:19]
+    function sanitizeClone(clonedDoc) {
+        const stars = clonedDoc.querySelectorAll('.star, .star-red, .star-blue, .star-green');
+        stars.forEach(el => {
+            el.style.filter = 'none';
+            el.style.mixBlendMode = 'normal';
+        });
+
+        // Remove dotted background pattern when capturing
+        const card = clonedDoc.getElementById('idCard');
+        if (card) {
+            card.style.backgroundImage = 'none';
+        }
+    }
+
+    // DOWNLOAD (9:16, headings + card, iOS tweaks)
     id('btnDownload').addEventListener('click', async () => {
         const downloadArea = id('downloadArea');
         const card = id('idCard');
         const wrapperFront = id('cardWrapper');
 
-        // Restore full size for capture
         card.style.transform = 'scale(1)';
         wrapperFront.style.marginBottom = '0px';
 
-        // On mobile, wrapper is viewport-width with overflow:hidden → sides get clipped.
-        // Temporarily force full 600px width and visible overflow so capture includes full card.
         const CARD_WIDTH = 600;
         const savedAreaWidth = downloadArea.style.width;
         const savedAreaMaxWidth = downloadArea.style.maxWidth;
@@ -803,16 +786,14 @@
         wrapperFront.style.width = CARD_WIDTH + 'px';
         wrapperFront.style.overflow = 'visible';
 
-        // Let layout paint (helps Safari/iOS avoid "Error generating image")
         await new Promise(r => requestAnimationFrame(r));
         await new Promise(r => setTimeout(r, 50));
 
-        // Wait for all images in capture area to load (Safari bug: lazy/unloaded images break html2canvas)
         function waitForImages(container) {
             const imgs = container ? container.querySelectorAll('img') : document.querySelectorAll('#downloadArea img');
             const promises = Array.from(imgs || []).map(img => {
                 if (!img.src || img.complete) return Promise.resolve();
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     img.onload = resolve;
                     img.onerror = resolve;
                     setTimeout(resolve, 5000);
@@ -822,32 +803,18 @@
         }
         await waitForImages(downloadArea);
 
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-        // Strip Safari-breaking CSS in the clone (filter, mix-blend-mode) so html2canvas can render
-        function sanitizeClone(clonedDoc) {
-            const stars = clonedDoc.querySelectorAll && clonedDoc.querySelectorAll('.star, .star-red');
-            if (stars && stars.length) {
-                stars.forEach(el => {
-                    el.style.filter = 'none';
-                    el.style.mixBlendMode = 'normal';
-                });
-            }
-        }
-
         function runCapture(scale) {
             return html2canvas(downloadArea, {
-                scale: scale,
+                scale: scale,                         // smaller scale on iOS
                 backgroundColor: '#f0f0f0',
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
                 imageTimeout: 15000,
-                onclone: (clonedDoc, clonedEl) => { sanitizeClone(clonedDoc); }
+                onclone: sanitizeClone
             });
         }
 
-        // iOS fallback: capture card and headings separately (smaller canvases = fewer Safari failures)
         async function captureIOSFallback() {
             const h1s = downloadArea.querySelectorAll('h1');
             const h2el = downloadArea.querySelector('h2');
@@ -857,10 +824,20 @@
 
             const headDiv = document.createElement('div');
             headDiv.style.cssText = 'position:absolute;left:-9999px;width:600px;background:#f0f0f0;padding:20px 0;text-align:center;font-family:\'IBM Plex Sans Thai\',sans-serif;box-sizing:border-box;';
-            headDiv.innerHTML = '<h1 style="margin:0 0 -30px 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText1 + '</h1><h1 style="margin:16px 0 0 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText2 + '</h1><h2 style="margin:4px 0 0 0;line-height:1.2;font-size:18px;">' + headText3 + '</h2>';
+            headDiv.innerHTML =
+                '<h1 style="margin:0 0 -30px 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText1 + '</h1>' +
+                '<h1 style="margin:16px 0 0 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText2 + '</h1>' +
+                '<h2 style="margin:4px 0 0 0;line-height:1.2;font-size:18px;">' + headText3 + '</h2>';
             document.body.appendChild(headDiv);
 
-            const opts = { scale: 1, backgroundColor: '#f0f0f0', logging: false, useCORS: true, allowTaint: true, onclone: (doc) => sanitizeClone(doc) };
+            const opts = {
+                scale: 1,
+                backgroundColor: '#f0f0f0',
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                onclone: sanitizeClone
+            };
             const [headCanvas, frontCanvas] = await Promise.all([
                 html2canvas(headDiv, opts),
                 html2canvas(card, opts)
@@ -894,21 +871,18 @@
         try {
             let captured;
             try {
-                captured = await runCapture(isIOS ? 1 : 2);
+                // LESS SCALE on iOS (1), slightly higher on others (1.5)[web:14][web:19]
+                captured = await runCapture(isIOS ? 1 : 1.5);
             } catch (firstErr) {
                 if (isIOS) {
                     console.warn('Full capture failed on iOS, using fallback:', firstErr);
                     combinedCanvas = await captureIOSFallback();
                 } else {
-                    try {
-                        captured = await runCapture(1);
-                    } catch (secondErr) {
-                        throw secondErr;
-                    }
+                    captured = await runCapture(1);
                 }
             }
 
-            if (!combinedCanvas) {
+            if (!combinedCanvas && captured) {
                 const outW = 1080;
                 const outH = 1920;
                 combinedCanvas = document.createElement('canvas');
@@ -937,26 +911,26 @@
             console.error('Download error:', err);
             alert('Error generating image. Please try again.');
         } finally {
-            // Restore layout (width/overflow so mobile scaling works again)
             downloadArea.style.width = savedAreaWidth;
             downloadArea.style.maxWidth = savedAreaMaxWidth;
             wrapperFront.style.width = savedWrap1Width;
             wrapperFront.style.overflow = savedWrap1Overflow;
-            scaleCard(); // restore scaling and wrapper margins
+            scaleCard();
         }
     });
 
-    // --- SHARE LOGIC (Unchanged) ---
+    // SHARE (card only, iOS‑safe options)
     async function shareToInstagram() {
         const cardElement = document.getElementById('idCard');
         if (!cardElement) return;
 
         try {
             const canvas = await html2canvas(cardElement, {
-                scale: 2,
-                backgroundColor: null,
+                scale: isIOS ? 1 : 2,
+                backgroundColor: '#f0f0f0',
                 useCORS: true,
-                allowTaint: true
+                allowTaint: true,
+                onclone: sanitizeClone
             });
 
             canvas.toBlob(async (blob) => {
@@ -977,6 +951,7 @@
             }, 'image/png');
         } catch (error) {
             console.error(error);
+            alert('Error generating image. Please try again.');
         }
     }
 </script>
