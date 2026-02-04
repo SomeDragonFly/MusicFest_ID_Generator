@@ -407,6 +407,10 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
+        
+        .btn-upload {
+        background-color: var(--red-accent);
+        }
 
         .btn:active {
             transform: scale(0.96);
@@ -606,8 +610,8 @@
     </div>
 
     <div class="controls">
-        <label for="imgInput" class="btn" id="btnControlUpload">
-            <i class="fa-solid fa-camera"></i> Upload Image
+        <label for="imgInput" class="btn btn-upload" id="btnControlUpload">
+        <i class="fa-solid fa-camera"></i> Upload Image
         </label>
 
         <button class="btn" id="btnDownload">
