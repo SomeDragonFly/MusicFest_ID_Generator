@@ -1,7 +1,23 @@
 <!DOCTYPE html>
+<!--
+  MusicFest ID Card Generator
+  
+  © 2026 Methas Nateesuwan. All Rights Reserved.
+  
+  Created for: Thammasat Secondary School Music Festival
+  Date: February 13 2026
+  
+  This code is the intellectual property of Methas Nateesuwan.
+  Unauthorized copying, distribution, or modification is prohibited.
+  
+  Contact: [iammethas@gmai.com]
+-->
 <html>
 <head>
     <title>MusicFest ID Card</title>
+    <meta name="author" content="Methas Nateesuwan">
+    <meta name="copyright" content="© 2026 Methas Nateesuwan">
+    <meta name="description" content="MusicFest ID Card Generator - Methas Nateesuwan">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -25,7 +41,7 @@
         --green-dark: #377253;
         --green-light: #457b61;
         --red-accent: #bb4237;
-        --bg-cream: #dee0d1;
+        --bg-cream: #ebecdf;
         --black: #000
     }
 
@@ -242,7 +258,7 @@
     .photo-area {
         width: 170px;
         height: 170px;
-        background-color: #dee0d1;
+        background-color: var(--bg-cream);
         border: 6px solid #000;
         display: flex;
         justify-content: center;
@@ -621,6 +637,11 @@
 
     <input type="file" id="imgInput" accept="image/*">
 
+    <footer style="text-align: center; padding: 20px; color: #666; font-size: 12px; margin-top: 40px;">
+        <p>© 2026 [Methas Nateesuwan • Created for TSS MusicFest 2026</p>
+        <p style="font-size: 10px; margin-top: 8px;">All rights reserved. This project may not be copied or distributed without permission.</p>
+    </footer>
+
 <script>
     const id = document.getElementById.bind(document);
 
@@ -786,10 +807,7 @@
             el.style.mixBlendMode = 'normal';
         });
 
-        const card = clonedDoc.getElementById('idCard');
-        if (card) {
-            card.style.backgroundImage = 'none';
-        }
+        // Keep the dotted pattern - don't remove it anymore
     }
 
     id('btnDownload').addEventListener('click', async () => {
