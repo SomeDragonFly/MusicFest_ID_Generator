@@ -1,7 +1,5 @@
 # MusicFest ID Card Generator
-
-**Author** Methas Nateesuwan
-**Published Date:** February 10, 2026
+Methas Nateesuwan
 
 ---
 
