@@ -1,5 +1,5 @@
 # MusicFest ID Card Generator
----
+
 ---
 
 ## Acknowledgments
