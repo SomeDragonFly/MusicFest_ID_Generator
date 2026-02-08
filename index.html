@@ -779,7 +779,6 @@
     window.addEventListener('resize', scaleCard);
     scaleCard();
 
-    // SANITIZE CLONE FOR HTML2CANVAS
     function sanitizeClone(clonedDoc) {
         const stars = clonedDoc.querySelectorAll('.star, .star-red, .star-blue, .star-green');
         stars.forEach(el => {
@@ -793,7 +792,6 @@
         }
     }
 
-    // DOWNLOAD (9:16, headings + background, CONTAIN mode - centers content with padding)
     id('btnDownload').addEventListener('click', async () => {
         const downloadArea = id('downloadArea');
         const card = id('idCard');
@@ -816,15 +814,14 @@
         await new Promise(r => requestAnimationFrame(r));
         await new Promise(r => setTimeout(r, 50));
 
-        // Load background image
         function loadBackgroundImage() {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.onload = () => resolve(img);
-                img.onerror = () => resolve(null); // Resolve with null if fails
+                img.onerror = () => resolve(null);
                 img.src = 'WebsiteBG.png';
-                setTimeout(() => resolve(null), 3000); // Timeout after 3s
+                setTimeout(() => resolve(null), 3000);
             });
         }
 
@@ -892,7 +889,6 @@
             const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + padding * 2;
             const contentW = Math.max(headCanvas.width, frontCanvas.width);
             
-            // Use CONTAIN mode - fit everything with padding
             const scale = Math.min((outW - padding * 2) / contentW, (outH - padding * 2) / totalContentH);
             const drawW = contentW * scale;
             const drawH = totalContentH * scale;
@@ -905,7 +901,6 @@
             combined.height = outH;
             const ctx = combined.getContext('2d');
             
-            // Draw background image if loaded, otherwise use gradient
             if (bgImage) {
                 ctx.drawImage(bgImage, 0, 0, outW, outH);
             } else {
@@ -953,7 +948,6 @@
 
                 const ctx = combinedCanvas.getContext('2d');
                 
-                // Draw background image if loaded, otherwise use gradient
                 if (bgImage) {
                     ctx.drawImage(bgImage, 0, 0, outW, outH);
                 } else {
@@ -967,7 +961,6 @@
                     ctx.fillRect(0, 0, outW, outH);
                 }
 
-                // Use CONTAIN mode - fit content with padding instead of cover
                 const padding = 40;
                 const scale = Math.min((outW - padding * 2) / captured.width, (outH - padding * 2) / captured.height);
                 const drawW = captured.width * scale;
@@ -1024,7 +1017,6 @@
         await new Promise(r => requestAnimationFrame(r));
         await new Promise(r => setTimeout(r, 50));
 
-        // Load background image
         function loadBackgroundImage() {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -1070,7 +1062,6 @@
 
             const ctx = combinedCanvas.getContext('2d');
             
-            // Draw background image if loaded, otherwise use gradient
             if (bgImage) {
                 ctx.drawImage(bgImage, 0, 0, outW, outH);
             } else {
@@ -1084,7 +1075,6 @@
                 ctx.fillRect(0, 0, outW, outH);
             }
 
-            // Use CONTAIN mode - fit content with padding
             const padding = 40;
             const scale = Math.min((outW - padding * 2) / captured.width, (outH - padding * 2) / captured.height);
             const drawW = captured.width * scale;
@@ -1103,7 +1093,7 @@
                         await navigator.share({
                             files: [file],
                             title: 'My MusicFest ID',
-                            text: 'See you at MusicFest! #MusicFest2026'
+                            text: 'See you at MusicFest!'
                         });
                     } catch (e) { 
                         console.log('Share cancelled or failed:', e); 
