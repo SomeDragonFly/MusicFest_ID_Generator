@@ -2,6 +2,19 @@
 Methas Nateesuwan
 
 ---
+---
+
+## Acknowledgments
+
+Special thanks to the following people who contributed to this project:
+
+**Design, Testing & Feedback:**
+- TSS Musicfest Stuff Team - Card design and visual concept, User experience testing
+
+**Technical Support:**
+- Kittisak porkha - UXUI Assistance
+
+---
 
 ## Copyright Notice
 
