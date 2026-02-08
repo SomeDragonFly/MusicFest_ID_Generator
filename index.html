@@ -18,468 +18,465 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        :root {
-            --blue-dark: #2657ab;
-            --blue-light: #5773a1;
-            --green-dark: #377253;
-            --green-light: #457b61;
-            --red-accent: #bb4237;
-            --bg-cream: #dee0d1;
-            --black: #000
-        }
+<style>
+    :root {
+        --blue-dark: #2657ab;
+        --blue-light: #5773a1;
+        --green-dark: #377253;
+        --green-light: #457b61;
+        --red-accent: #bb4237;
+        --bg-cream: #dee0d1;
+        --black: #000
+    }
 
-        body {
-            font-family: 'Prompt', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            gap: 16px;
-            padding-top: 20px;
-            overflow-x: hidden;
-        }
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-        #cardWrapper {
-            position: relative;
-            margin: 0 auto;
-            max-width: 600px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-        }
+    body {
+        font-family: 'Prompt', sans-serif;
+        background-image: url('WebsiteBG.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        gap: 16px;
+        padding-top: 20px;
+        overflow-x: hidden;
+    }
 
-        #cardWrapper { margin-top: 20px; }
+    #cardWrapper {
+        position: relative;
+        margin: 0 auto;
+        max-width: 600px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+    }
 
-        #downloadArea {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding-top: 20px;
-            background-color: #f0f0f0;
-            width: 100%;
-            max-width: 600px;
-            box-sizing: border-box;
-        }
+    #cardWrapper { margin-top: 20px; }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+    #downloadArea {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding-top: 20px;
+        background-color: transparent;
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
 
-        .modal-content {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .crop-container {
-            width: 100%;
-            height: 400px;
-            background: #333;
-            overflow: hidden;
-        }
+    .modal-content {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
-        .crop-container img {
-            max-width: 100%;
-        }
+    .crop-container {
+        width: 100%;
+        height: 400px;
+        background: #333;
+        overflow: hidden;
+    }
 
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+    .crop-container img {
+        max-width: 100%;
+    }
 
-        #idCard {
-            width: 600px;
-            height: 380px;
-            background-color: var(--bg-cream);
-            border-radius: 40px;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0);
-            flex-shrink: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23666958' fill-opacity='0.35'%3E%3Ccircle cx='1' cy='1' r='0.9'/%3E%3Ccircle cx='8' cy='8' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
-        }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
 
-        .star {
-            position: absolute;
-            font-size: 220px;
-            line-height: 1;
-            filter: drop-shadow(6px 6px 0 rgba(255, 255, 255, 0.35));
-            z-index: 2;
-        }
+    #idCard {
+        width: 600px;
+        height: 380px;
+        background-color: var(--bg-cream);
+        border-radius: 40px;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        flex-shrink: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23666958' fill-opacity='0.35'%3E%3Ccircle cx='1' cy='1' r='0.9'/%3E%3Ccircle cx='8' cy='8' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
+        background-repeat: repeat;
+    }
 
-        .star-red {
-            top: -120px;
-            right: -37px;
-            color: var(--red-accent);
-            transform: rotate(-15deg);
-            z-index: 4;
-            mix-blend-mode: hard-light;
-        }
+    .star {
+        position: absolute;
+        font-size: 220px;
+        line-height: 1;
+        filter: drop-shadow(6px 6px 0 rgba(255, 255, 255, 0.35));
+        z-index: 2;
+    }
 
-        .star-red-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 4;
-        }
+    .star-red {
+        top: -120px;
+        right: -37px;
+        color: var(--red-accent);
+        transform: rotate(-15deg);
+        z-index: 4;
+        mix-blend-mode: hard-light;
+    }
 
-        .star-blue {
-            bottom: -60px;
-            left: 10px;
-            font-size: 190px;
-            color: var(--blue-light);
-            transform: rotate(-10deg);
-        }
+    .star-red-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 4;
+    }
 
-        .star-green {
-            top: -40px;
-            left: -20px;
-            font-size: 200px;
-            color: var(--green-light);
-            transform: rotate(-8deg);
-        }
+    .star-blue {
+        bottom: -60px;
+        left: 10px;
+        font-size: 190px;
+        color: var(--blue-light);
+        transform: rotate(-10deg);
+    }
 
-        .header-bar {
-            background-color: var(--green-dark);
-            height: 85px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-            position: relative;
-            z-index: 3;
-        }
+    .star-green {
+        top: -40px;
+        left: -20px;
+        font-size: 200px;
+        color: var(--green-light);
+        transform: rotate(-8deg);
+    }
 
-        .header-text {
-            font-family: 'Special Gothic Expanded One', sans-serif;
-            font-size: 65px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            color: #000000;
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
+    .header-bar {
+        background-color: var(--green-dark);
+        height: 85px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0 30px;
+        position: relative;
+        z-index: 3;
+    }
 
-        .editable-inline {
-            outline: none;
-            cursor: text;
-        }
+    .header-text {
+        font-family: 'Special Gothic Expanded One', sans-serif;
+        font-size: 65px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #000000;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
 
-        #sigSpace {
-            font-family: 'Reenie Beanie', cursive;
-            border-bottom: 3px dotted #000000;
-            min-width: 120px;
-            text-transform: uppercase;
-            font-size: 70px;
-            letter-spacing: 2px;
-            color: #ffffff;
-            line-height: 0.6;
-            position: relative;
-            top: 6px;
-            display: inline-block;
-        }
+    .editable-inline {
+        outline: none;
+        cursor: text;
+    }
 
-        #headerDate {
-            position: absolute;
-            right: 4px;
-            top: 59px;
-            transform: translateY(-50%);
-            font-family: 'Doto', monospace;
-            font-size: 20px;
-            letter-spacing: -2px;
-            color: #ffffff;
-            z-index: 5;
-        }
+    #sigSpace {
+        font-family: 'Reenie Beanie', cursive;
+        border-bottom: 3px dotted #000000;
+        min-width: 120px;
+        text-transform: uppercase;
+        font-size: 70px;
+        letter-spacing: 2px;
+        color: #ffffff;
+        line-height: 0.6;
+        position: relative;
+        top: 6px;
+        display: inline-block;
+    }
 
-        .card-body {
-            display: flex;
-            padding: 20px 35px;
-            gap: 30px;
-            z-index: 3;
-        }
+    #headerDate {
+        position: absolute;
+        right: 4px;
+        top: 59px;
+        transform: translateY(-50%);
+        font-family: 'Doto', monospace;
+        font-size: 20px;
+        letter-spacing: -2px;
+        color: #ffffff;
+        z-index: 5;
+    }
 
-        .photo-area {
-            width: 170px;
-            height: 170px;
-            background-color: #dee0d1;
-            border: 6px solid #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            flex-shrink: 0;
-            margin-top: 10px;
-            position: relative;
-            z-index: 10;
-        }
+    .card-body {
+        display: flex;
+        padding: 20px 35px;
+        gap: 30px;
+        z-index: 3;
+    }
 
-        #photoPreview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
+    .photo-area {
+        width: 170px;
+        height: 170px;
+        background-color: #dee0d1;
+        border: 6px solid #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        margin-top: 10px;
+        position: relative;
+        z-index: 10;
+    }
 
-        #photoPlaceholder {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            padding: 10px;
-        }
+    #photoPreview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
 
-        .photo-upload-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 8px 14px;
-            background-color: var(--red-accent);
-            color: #fff;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            text-align: center;
-            z-index: 5;
-        }
+    #photoPlaceholder {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        padding: 10px;
+    }
 
-        .info-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-            margin-top: 10px;
-        }
-
-        .field-row {
-            padding-bottom: 2px;
-            display: flex;
-            align-items: baseline;
-            gap: 10px
-        }
-
-        .field-label {
-            font-weight: 600;
-            margin-right: 4px;
-            white-space: nowrap;
-            font-size: 13px;
-            width: 90px;
-            text-align: left;
-        }
-
-        .field-value {
-            color: #000;
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-            font-size: 18px;
-            font-weight: bold;
-            right: 30px;
-            flex-grow: 1;
-            border-bottom: 2px dotted #333;
-            min-width: 50px;
-            line-height: 1.0;
-            vertical-align: baseline;
-            position: relative;
-        }
-
-        .footer-bar {
-            background-color: var(--blue-dark);
-            height: 50px;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            z-index: 2;
-        }
-
-        .footer-text-wrapper {
-            position: absolute;
-            bottom: 20px;
-            right: 13px;
-            z-index: 3;
-            display: flex;
-            align-items: baseline;
-            gap: 1px;
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-            font-size: 40px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--bg-cream);
-            color: #000;
-        }
-
-        .label-yang { margin-right: 4px; }
-        .label-yuu { margin-left: 4px; margin-right: 4px; }
-
-        #footerMiddle, #footerAfter {
-            width: 90px;
-            line-height: 0.8;
-            border-bottom: 5px dotted var(--black);
-            text-transform: uppercase;
-            outline: none;
-            cursor: text;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        #footerMiddle { min-width: 5px; }
-        #footerAfter { min-width: 1px; }
-
-        .footer-message {
-            position: absolute;
-            bottom: 13px;
-            left: 26px;
-            z-index: 3;
-            font-size: 11px;
-            color: #ffffff;
-            font-family: 'Doto', monospace;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .footer-text-head {
-            position: absolute;
-            bottom: 84px;
-            right: 200px;
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 0 10px;
-            margin-top: 20px;
-            margin-bottom: 40px;
-        }
-
-        .btn {
-            background-color: var(--blue-dark);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-weight: bold;
-            font-family: 'Prompt', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        
-        .btn-upload {
+    .photo-upload-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 8px 14px;
         background-color: var(--red-accent);
-        }
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        text-align: center;
+        z-index: 5;
+    }
 
-        .btn:active {
-            transform: scale(0.96);
-        }
+    .info-area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        margin-top: 10px;
+    }
 
-        .btn-cancel {
-            background-color: #888;
-        }
+    .field-row {
+        padding-bottom: 2px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px
+    }
 
-        .btn-icon-only {
-            background-color: var(--green-dark);
-            color: white;
-            font-size: 20px;
-            width: 46px;
-            height: 46px;
-            padding: 0;
-            border-radius: 50%;
-            aspect-ratio: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-        }
+    .field-label {
+        font-weight: 600;
+        margin-right: 4px;
+        white-space: nowrap;
+        font-size: 13px;
+        width: 90px;
+        text-align: left;
+    }
 
-        .file-label {
-            display: inline-block;
-            padding: 8px 14px;
-            background-color: var(--green-dark);
-            color: #fff;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
+    .field-value {
+        color: #000;
+        font-family: 'IBM Plex Sans Thai', sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        right: 30px;
+        flex-grow: 1;
+        border-bottom: 2px dotted #333;
+        min-width: 50px;
+        line-height: 1.0;
+        vertical-align: baseline;
+        position: relative;
+    }
 
-        .limit-reached {
-            border-bottom-color: red !important;
-        }
+    .footer-bar {
+        background-color: var(--blue-dark);
+        height: 50px;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        z-index: 2;
+    }
 
-        #imgInput {
-            display: none;
-        }
+    .footer-text-wrapper {
+        position: absolute;
+        bottom: 20px;
+        right: 13px;
+        z-index: 3;
+        display: flex;
+        align-items: baseline;
+        gap: 1px;
+        font-family: 'IBM Plex Sans Thai', sans-serif;
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #000;
+    }
 
-        .top-caption {
+    .label-yang { margin-right: 4px; }
+    .label-yuu { margin-left: 4px; margin-right: 4px; }
+
+    #footerMiddle, #footerAfter {
+        width: 90px;
+        line-height: 0.8;
+        border-bottom: 5px dotted var(--black);
+        text-transform: uppercase;
+        outline: none;
+        cursor: text;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    #footerMiddle { min-width: 5px; }
+    #footerAfter { min-width: 1px; }
+
+    .footer-message {
+        position: absolute;
+        bottom: 13px;
+        left: 26px;
+        z-index: 3;
+        font-size: 11px;
+        color: #ffffff;
+        font-family: 'Doto', monospace;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .footer-text-head {
+        position: absolute;
+        bottom: 84px;
+        right: 200px;
+        font-family: 'IBM Plex Sans Thai', sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 10px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .btn {
+        background-color: var(--blue-dark);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-weight: bold;
+        font-family: 'Prompt', sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        transition: transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .btn-upload { background-color: var(--red-accent); }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-cancel { background-color: #888; }
+
+    .btn-icon-only {
+        background-color: var(--green-dark);
+        color: white;
+        font-size: 20px;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        border-radius: 50%;
+        aspect-ratio: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .file-label {
+        display: inline-block;
+        padding: 8px 14px;
+        background-color: var(--green-dark);
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .limit-reached { border-bottom-color: red !important; }
+
+    #imgInput { display: none; }
+
+    .top-caption {
         font-family: 'IBM Plex Sans Thai', sans-serif;
         text-align: center;
         margin-bottom: -30px;
         line-height: 1.2;
         padding-bottom: 0;
         font-size: 44px;
-        }
+    }
 
-        h1 {
+    h1 {
         font-family: 'IBM Plex Sans Thai', sans-serif;
         text-align: center;
         margin-bottom: -30px;
         line-height: 1.2;
         padding-bottom: 0;
-        font-size: 36px;   /* bottom main title */
-        }
+        font-size: 36px;
+    }
 
-        h2 {
+    h2 {
         font-family: 'IBM Plex Sans Thai', sans-serif;
         text-align: center;
         margin-top: 1;
         line-height: 1.2;
         font-size: 24px;
-        }
+    }
 
-        @media (max-width: 640px) {
+    @media (max-width: 640px) {
         .cards-stack { gap: 10px; }
         .btn { font-size: 14px; padding: 8px 16px; }
 
@@ -496,29 +493,27 @@
         .Bottom-Caption h2 {
             font-size: 16px;
         }
-        }
+    }
 
-        #dispW1:empty::before,
-        #dispW2:empty::before,
-        #dispW3:empty::before {
-            content: "......";
-            color: #000000;
-            pointer-events: none;
-        }
+    #dispW1:empty::before,
+    #dispW2:empty::before,
+    #dispW3:empty::before {
+        content: "......";
+        color: #000000;
+        pointer-events: none;
+    }
 
-        #dispW1, #dispW2, #dispW3 {
-            min-width: 30px;
-            display: inline-block;
-        }
-        
-    </style>
+    #dispW1, #dispW2, #dispW3 {
+        min-width: 30px;
+        display: inline-block;
+    }
+</style>
 </head>
 
 <body>
     <div id="downloadArea">
-        
         <div class="caption">
-            <h1 class="top-caption">You’re still young</h1>
+            <h1 class="top-caption">You're still young</h1>
         </div>
 
         <!-- Hidden Crop Modal -->
@@ -595,23 +590,23 @@
 
                 <div class="footer-message">
                     <div class="footer-line-top">Who once holds this card always a</div>
-                    <div class="footer-young">“YOUNG”</div>
+                    <div class="footer-young">"YOUNG"</div>
                 </div>
 
                 <div class="footer-text-head">"อยากจะบอกตัวเองไว้ว่า"</div>
                 <div class="footer-bar"></div>
             </div>
         </div>
+
         <div class="Bottom-Caption">
             <h1>TSS Music Festival 2026</h1>
             <h2>Young You</h2>
         </div>
-
     </div>
 
     <div class="controls">
         <label for="imgInput" class="btn btn-upload" id="btnControlUpload">
-        <i class="fa-solid fa-camera"></i> Upload Image
+            <i class="fa-solid fa-camera"></i> Upload Image
         </label>
 
         <button class="btn" id="btnDownload">
@@ -642,7 +637,7 @@
     let cropper = null;
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);  // iPadOS on Mac UA[web:8]
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
     // IMAGE LOGIC
     imgInput.addEventListener('change', (e) => {
@@ -784,7 +779,7 @@
     window.addEventListener('resize', scaleCard);
     scaleCard();
 
-    // SANITIZE CLONE FOR HTML2CANVAS (iOS friendly)[web:8][web:19]
+    // SANITIZE CLONE FOR HTML2CANVAS
     function sanitizeClone(clonedDoc) {
         const stars = clonedDoc.querySelectorAll('.star, .star-red, .star-blue, .star-green');
         stars.forEach(el => {
@@ -792,14 +787,13 @@
             el.style.mixBlendMode = 'normal';
         });
 
-        // Remove dotted background pattern when capturing
         const card = clonedDoc.getElementById('idCard');
         if (card) {
             card.style.backgroundImage = 'none';
         }
     }
 
-    // DOWNLOAD (9:16, headings + card, iOS tweaks)
+    // DOWNLOAD (9:16, headings + background, CONTAIN mode - centers content with padding)
     id('btnDownload').addEventListener('click', async () => {
         const downloadArea = id('downloadArea');
         const card = id('idCard');
@@ -822,6 +816,18 @@
         await new Promise(r => requestAnimationFrame(r));
         await new Promise(r => setTimeout(r, 50));
 
+        // Load background image
+        function loadBackgroundImage() {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null); // Resolve with null if fails
+                img.src = 'WebsiteBG.png';
+                setTimeout(() => resolve(null), 3000); // Timeout after 3s
+            });
+        }
+
         function waitForImages(container) {
             const imgs = container ? container.querySelectorAll('img') : document.querySelectorAll('#downloadArea img');
             const promises = Array.from(imgs || []).map(img => {
@@ -836,10 +842,13 @@
         }
         await waitForImages(downloadArea);
 
+        // Load the background image
+        const bgImage = await loadBackgroundImage();
+
         function runCapture(scale) {
             return html2canvas(downloadArea, {
-                scale: scale,                         // smaller scale on iOS
-                backgroundColor: '#f0f0f0',
+                scale: scale,
+                backgroundColor: null,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
@@ -856,16 +865,16 @@
             const headText3 = (h2el && h2el.textContent) || "Young You";
 
             const headDiv = document.createElement('div');
-            headDiv.style.cssText = 'position:absolute;left:-9999px;width:600px;background:#f0f0f0;padding:20px 0;text-align:center;font-family:\'IBM Plex Sans Thai\',sans-serif;box-sizing:border-box;';
+            headDiv.style.cssText = 'position:absolute;left:-9999px;width:600px;background:transparent;padding:20px 0;text-align:center;font-family:\'IBM Plex Sans Thai\',sans-serif;box-sizing:border-box;';
             headDiv.innerHTML =
-                '<h1 style="margin:0 0 -30px 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText1 + '</h1>' +
-                '<h1 style="margin:16px 0 0 0;line-height:1;padding:0;font-size:24px;font-weight:bold;">' + headText2 + '</h1>' +
-                '<h2 style="margin:4px 0 0 0;line-height:1.2;font-size:18px;">' + headText3 + '</h2>';
+                '<h1 style="margin:0 0 -30px 0;line-height:1;padding:0;font-size:44px;font-weight:bold;">' + headText1 + '</h1>' +
+                '<h1 style="margin:40px 0 -6px 0;line-height:1;padding:0;font-size:36px;font-weight:bold;">' + headText2 + '</h1>' +
+                '<h2 style="margin:0;line-height:1.2;font-size:24px;">' + headText3 + '</h2>';
             document.body.appendChild(headDiv);
 
             const opts = {
-                scale: 1,
-                backgroundColor: '#f0f0f0',
+                scale: 2,
+                backgroundColor: null,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
@@ -877,25 +886,45 @@
             ]);
             headDiv.remove();
 
-            const outW = 1080, outH = 1920, gap = 24;
-            const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + 60;
+            const outW = 1080, outH = 1920;
+            const gap = 40;
+            const padding = 40;
+            const totalContentH = headCanvas.height + gap + frontCanvas.height + gap + padding * 2;
             const contentW = Math.max(headCanvas.width, frontCanvas.width);
-            const scale = Math.min(outW / contentW, outH / totalContentH);
+            
+            // Use CONTAIN mode - fit everything with padding
+            const scale = Math.min((outW - padding * 2) / contentW, (outH - padding * 2) / totalContentH);
             const drawW = contentW * scale;
             const drawH = totalContentH * scale;
-            let y = (outH - drawH) / 2;
+            
+            let y = (outH - drawH) / 2 + padding * scale;
             const x = (outW - drawW) / 2;
 
             const combined = document.createElement('canvas');
             combined.width = outW;
             combined.height = outH;
             const ctx = combined.getContext('2d');
-            ctx.fillStyle = '#f0f0f0';
-            ctx.fillRect(0, 0, outW, outH);
+            
+            // Draw background image if loaded, otherwise use gradient
+            if (bgImage) {
+                ctx.drawImage(bgImage, 0, 0, outW, outH);
+            } else {
+                const gradient = ctx.createLinearGradient(0, 0, outW, outH);
+                gradient.addColorStop(0, '#a8c5a8');
+                gradient.addColorStop(0.25, '#e8d5b8');
+                gradient.addColorStop(0.5, '#c8d5e8');
+                gradient.addColorStop(0.75, '#f8c8b8');
+                gradient.addColorStop(1, '#e8b8c8');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, outW, outH);
+            }
 
-            ctx.drawImage(headCanvas, x, y, headCanvas.width * scale, headCanvas.height * scale);
-            y += headCanvas.height * scale + gap * scale;
-            ctx.drawImage(frontCanvas, x, y, frontCanvas.width * scale, frontCanvas.height * scale);
+            const scaledHeadH = headCanvas.height * scale;
+            const scaledCardH = frontCanvas.height * scale;
+            
+            ctx.drawImage(headCanvas, x, y, headCanvas.width * scale, scaledHeadH);
+            y += scaledHeadH + gap * scale;
+            ctx.drawImage(frontCanvas, x, y, frontCanvas.width * scale, scaledCardH);
 
             return combined;
         }
@@ -904,40 +933,49 @@
         try {
             let captured;
             try {
-                // LESS SCALE on iOS (1), slightly higher on others (1.5)[web:14][web:19]
-                captured = await runCapture(isIOS ? 1 : 1.5);
+                captured = await runCapture(isIOS ? 1.5 : 2);
             } catch (firstErr) {
                 if (isIOS) {
                     console.warn('Full capture failed on iOS, using fallback:', firstErr);
                     combinedCanvas = await captureIOSFallback();
                 } else {
-                    captured = await runCapture(1);
+                    captured = await runCapture(1.5);
                 }
             }
 
             if (!combinedCanvas && captured) {
-            const outW = 1080;
-            const outH = 1920;
-            const margin = 160;
+                const outW = 1080;
+                const outH = 1920;
 
-            combinedCanvas = document.createElement('canvas');
-            combinedCanvas.width = outW;
-            combinedCanvas.height = outH;
+                combinedCanvas = document.createElement('canvas');
+                combinedCanvas.width = outW;
+                combinedCanvas.height = outH;
 
-            const ctx = combinedCanvas.getContext('2d');
-            ctx.fillStyle = '#f0f0f0';
-            ctx.fillRect(0, 0, outW, outH);
+                const ctx = combinedCanvas.getContext('2d');
+                
+                // Draw background image if loaded, otherwise use gradient
+                if (bgImage) {
+                    ctx.drawImage(bgImage, 0, 0, outW, outH);
+                } else {
+                    const gradient = ctx.createLinearGradient(0, 0, outW, outH);
+                    gradient.addColorStop(0, '#a8c5a8');
+                    gradient.addColorStop(0.25, '#e8d5b8');
+                    gradient.addColorStop(0.5, '#c8d5e8');
+                    gradient.addColorStop(0.75, '#f8c8b8');
+                    gradient.addColorStop(1, '#e8b8c8');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, outW, outH);
+                }
 
-            const maxW = outW - margin * 2;
-            const maxH = outH - margin * 2;
-            const scale = Math.min(maxW / captured.width, maxH / captured.height);
+                // Use CONTAIN mode - fit content with padding instead of cover
+                const padding = 40;
+                const scale = Math.min((outW - padding * 2) / captured.width, (outH - padding * 2) / captured.height);
+                const drawW = captured.width * scale;
+                const drawH = captured.height * scale;
+                const x = (outW - drawW) / 2;
+                const y = (outH - drawH) / 2;
 
-            const drawW = captured.width * scale;
-            const drawH = captured.height * scale;
-
-            const x = (outW - drawW) / 2;
-            const y = (outH - drawH) / 2;
-            ctx.drawImage(captured, x, y, drawW, drawH);
+                ctx.drawImage(captured, x, y, drawW, drawH);
             }
 
             combinedCanvas.toBlob(blob => {
@@ -960,7 +998,7 @@
         }
     });
 
-    // SHARE (card only, iOS‑safe options)
+    // SHARE (card only)
     async function shareToInstagram() {
         const cardElement = document.getElementById('idCard');
         if (!cardElement) return;
@@ -996,7 +1034,5 @@
         }
     }
 </script>
-
 </body>
 </html>
-
