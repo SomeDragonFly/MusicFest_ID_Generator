@@ -1,7 +1,13 @@
 # MusicFest ID Card Generator
-
 ---
 
+MusicFest ID Card Generator • Create custom festival ID cards with photo cropping, 
+editable text fields, and high-quality image export. Built with HTML2Canvas rendering, 
+Cropper.js integration, and responsive CSS design. Features Thai language support, 
+mobile optimization, and client-side image processing with no backend required. 
+Developed for TSS Music Festival 2026.
+
+---
 ## Acknowledgments
 
 Special thanks to the following people who contributed to this project:
