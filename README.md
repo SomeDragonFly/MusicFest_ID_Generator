@@ -1,6 +1,4 @@
 # MusicFest ID Card Generator
-Methas Nateesuwan
-
 ---
 ---
 
