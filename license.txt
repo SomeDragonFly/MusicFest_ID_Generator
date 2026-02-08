@@ -1,0 +1,19 @@
+COPYRIGHT NOTICE
+MusicFest ID Card Generator
+Copyright © 2026 Methas Nateesuwan. All Rights Reserved.
+
+This software and associated documentation files (the "Software") were 
+created by Methas Nateesuwan for Thammasat Secondary School MusicFest in February 2026.
+
+PERMISSIONS:
+- This project may be viewed for educational evaluation purposes
+- Screenshots and demonstrations are permitted with proper attribution
+
+RESTRICTIONS:
+- No copying, modification, or distribution without written permission
+- Commercial use is strictly prohibited
+- Academic use by others requires explicit written consent
+
+For permissions or inquiries, contact: iammethas@gmail.com
+
+Created: February 10, 2026
