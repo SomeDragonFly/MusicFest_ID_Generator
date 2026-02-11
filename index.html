@@ -995,18 +995,10 @@
 
                 try {
                     if (isIOS) {
-                        // Use dataURL and open in a new tab – users save from Photos/long‑press
-                        const dataUrl = combinedCanvas.toDataURL('image/png'); // uses canvas API[web:117]
-                        const newTab = window.open();
-                        if (newTab) {
-                            newTab.document.write('<img src="' + dataUrl + '" style="width:100%;height:auto;"/>');
-                            newTab.document.close();
-                        } else {
-                            // Fallback if popups are blocked
-                            window.location.href = dataUrl;
-                        }
+                        // Just navigate to the PNG; user long‑presses and saves.
+                        const dataUrl = combinedCanvas.toDataURL('image/png');
+                        window.location.href = dataUrl;
                     } else {
-                        // Desktop / Android: normal download behavior
                         combinedCanvas.toBlob(blob => {
                             if (!blob) return;
                             const url = URL.createObjectURL(blob);
