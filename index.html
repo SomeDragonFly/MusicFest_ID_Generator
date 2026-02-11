@@ -1048,10 +1048,22 @@
             if (isIOS) {
                 canvas = await captureForIOS();
                 
-                // Display in modal for iOS
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-                iosDownloadImage.src = dataUrl;
-                iosDownloadModal.style.display = 'flex';
+                // Use toBlob for iOS instead of toDataURL to avoid security errors
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        alert('Failed to generate image. Please try again.');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                    
+                    const url = URL.createObjectURL(blob);
+                    iosDownloadImage.src = url;
+                    iosDownloadModal.style.display = 'flex';
+                    
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 'image/jpeg', 0.92);
             } else {
                 // Desktop version - capture with rounded corners
                 const downloadArea = id('downloadArea');
@@ -1148,6 +1160,12 @@
 
                 // Download
                 canvas.toBlob(blob => {
+                    if (!blob) {
+                        alert('Failed to create image. Please try again.');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -1156,13 +1174,15 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
+                    
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }, 'image/png');
             }
 
         } catch (err) {
             console.error('Download error:', err);
             alert(err.message || 'Error generating image. Please try again.');
-        } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
