@@ -887,26 +887,67 @@
         });
     }
 
+    // Function to apply rounded corners to a canvas
+    function applyRoundedCorners(sourceCanvas, borderRadius) {
+        const rounded = document.createElement('canvas');
+        rounded.width = sourceCanvas.width;
+        rounded.height = sourceCanvas.height;
+        const ctx = rounded.getContext('2d');
+        
+        // Create rounded rectangle path
+        const radius = borderRadius;
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(sourceCanvas.width - radius, 0);
+        ctx.quadraticCurveTo(sourceCanvas.width, 0, sourceCanvas.width, radius);
+        ctx.lineTo(sourceCanvas.width, sourceCanvas.height - radius);
+        ctx.quadraticCurveTo(sourceCanvas.width, sourceCanvas.height, sourceCanvas.width - radius, sourceCanvas.height);
+        ctx.lineTo(radius, sourceCanvas.height);
+        ctx.quadraticCurveTo(0, sourceCanvas.height, 0, sourceCanvas.height - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        
+        // Clip and draw
+        ctx.clip();
+        ctx.drawImage(sourceCanvas, 0, 0);
+        
+        return rounded;
+    }
+
     // IMPROVED iOS CAPTURE FUNCTION
     async function captureForIOS() {
         const card = id('idCard');
         const downloadArea = id('downloadArea');
         
-        // Create a simple gradient background
-        function createGradientBackground(width, height) {
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            
-            const gradient = ctx.createLinearGradient(0, 0, width, height);
-            gradient.addColorStop(0, '#a8c5a8');
-            gradient.addColorStop(0.5, '#e8d5b8');
-            gradient.addColorStop(1, '#e8b8c8');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            return canvas;
+        // Load background image
+        function loadBackgroundImage(width, height) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas);
+                };
+                img.onerror = () => {
+                    // Fallback to gradient
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    const gradient = ctx.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, '#a8c5a8');
+                    gradient.addColorStop(0.5, '#e8d5b8');
+                    gradient.addColorStop(1, '#e8b8c8');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+                    resolve(canvas);
+                };
+                img.src = 'WebsiteBG.png';
+            });
         }
 
         try {
@@ -917,7 +958,7 @@
             await new Promise(r => setTimeout(r, 300));
 
             // Capture just the card with conservative settings
-            const cardCanvas = await html2canvas(card, {
+            const cardCanvasRaw = await html2canvas(card, {
                 scale: 1.5,
                 backgroundColor: '#ebecdf',
                 logging: false,
@@ -928,16 +969,20 @@
                 onclone: (clonedDoc) => {
                     const clonedCard = clonedDoc.querySelector('#idCard');
                     if (clonedCard) {
-                        // Remove problematic properties
-                        clonedCard.style.backgroundImage = 'none';
+                        // Keep the background pattern, just remove filters
                         const stars = clonedCard.querySelectorAll('.star');
                         stars.forEach(el => {
                             el.style.filter = 'none';
                             el.style.mixBlendMode = 'normal';
                         });
+                        // Remove box shadow that might be causing issues
+                        clonedCard.style.boxShadow = 'none';
                     }
                 }
             });
+            
+            // Apply rounded corners (40px * 1.5 scale = 60px)
+            const cardCanvas = applyRoundedCorners(cardCanvasRaw, 60);
 
             // Get text elements manually
             const topText = document.querySelector('.top-caption');
@@ -947,7 +992,7 @@
             // Create output canvas
             const outW = 1080;
             const outH = 1920;
-            const bgCanvas = createGradientBackground(outW, outH);
+            const bgCanvas = await loadBackgroundImage(outW, outH);
             
             const combined = document.createElement('canvas');
             combined.width = outW;
@@ -1008,36 +1053,46 @@
                 iosDownloadImage.src = dataUrl;
                 iosDownloadModal.style.display = 'flex';
             } else {
-                // Desktop version - keep existing logic
+                // Desktop version - capture with rounded corners
                 const downloadArea = id('downloadArea');
                 const card = id('idCard');
                 const wrapperFront = id('cardWrapper');
 
-                card.style.transform = 'scale(1)';
-                wrapperFront.style.marginBottom = '0px';
+                // Wait for fonts
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+                await new Promise(r => setTimeout(r, 200));
 
-                const CARD_WIDTH = 600;
-                const savedAreaWidth = downloadArea.style.width;
-                const savedAreaMaxWidth = downloadArea.style.maxWidth;
-                const savedWrap1Width = wrapperFront.style.width;
-                const savedWrap1Overflow = wrapperFront.style.overflow;
-
-                downloadArea.style.width = CARD_WIDTH + 'px';
-                downloadArea.style.maxWidth = CARD_WIDTH + 'px';
-                wrapperFront.style.width = CARD_WIDTH + 'px';
-                wrapperFront.style.overflow = 'visible';
-
-                await new Promise(r => setTimeout(r, 100));
-
-                const captured = await html2canvas(downloadArea, {
+                // Capture just the card at full scale
+                const cardCanvasRaw = await html2canvas(card, {
                     scale: 2,
-                    backgroundColor: null,
+                    backgroundColor: '#ebecdf',
                     logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    imageTimeout: 15000,
-                    onclone: sanitizeClone
+                    useCORS: false,
+                    allowTaint: false,
+                    imageTimeout: 5000,
+                    onclone: (clonedDoc) => {
+                        const clonedCard = clonedDoc.querySelector('#idCard');
+                        if (clonedCard) {
+                            // Keep background pattern, remove filters and shadows
+                            const stars = clonedCard.querySelectorAll('.star');
+                            stars.forEach(el => {
+                                el.style.filter = 'none';
+                                el.style.mixBlendMode = 'normal';
+                            });
+                            clonedCard.style.boxShadow = 'none';
+                        }
+                    }
                 });
+
+                // Apply rounded corners (40px * 2 scale = 80px)
+                const cardCanvas = applyRoundedCorners(cardCanvasRaw, 80);
+
+                // Get text elements
+                const topText = document.querySelector('.top-caption');
+                const h1Text = document.querySelector('.Bottom-Caption h1');
+                const h2Text = document.querySelector('.Bottom-Caption h2');
 
                 const outW = 1080;
                 const outH = 1920;
@@ -1046,28 +1101,49 @@
                 canvas.height = outH;
                 const ctx = canvas.getContext('2d');
                 
-                // Simple gradient for desktop too
-                const gradient = ctx.createLinearGradient(0, 0, outW, outH);
-                gradient.addColorStop(0, '#a8c5a8');
-                gradient.addColorStop(0.5, '#e8d5b8');
-                gradient.addColorStop(1, '#e8b8c8');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, outW, outH);
+                // Load background image with fallback
+                const bgImg = new Image();
+                const bgLoaded = await new Promise((resolve) => {
+                    bgImg.onload = () => resolve(true);
+                    bgImg.onerror = () => resolve(false);
+                    bgImg.src = 'WebsiteBG.png';
+                    setTimeout(() => resolve(false), 2000);
+                });
 
-                const padding = 40;
-                const scale = Math.min((outW - padding * 2) / captured.width, (outH - padding * 2) / captured.height);
-                const drawW = captured.width * scale;
-                const drawH = captured.height * scale;
-                const x = (outW - drawW) / 2;
-                const y = (outH - drawH) / 2;
+                if (bgLoaded) {
+                    ctx.drawImage(bgImg, 0, 0, outW, outH);
+                } else {
+                    const gradient = ctx.createLinearGradient(0, 0, outW, outH);
+                    gradient.addColorStop(0, '#a8c5a8');
+                    gradient.addColorStop(0.5, '#e8d5b8');
+                    gradient.addColorStop(1, '#e8b8c8');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, outW, outH);
+                }
 
-                ctx.drawImage(captured, x, y, drawW, drawH);
+                // Draw text
+                const textY = 200;
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 70px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(topText ? topText.innerText : "You're still young", outW / 2, textY);
 
-                // Restore styles
-                downloadArea.style.width = savedAreaWidth;
-                downloadArea.style.maxWidth = savedAreaMaxWidth;
-                wrapperFront.style.width = savedWrap1Width;
-                wrapperFront.style.overflow = savedWrap1Overflow;
+                // Draw card with shadow
+                const cardScale = (outW - 80) / cardCanvas.width;
+                const cardW = cardCanvas.width * cardScale;
+                const cardH = cardCanvas.height * cardScale;
+                const cardY = textY + 100;
+                const cardX = (outW - cardW) / 2;
+
+                ctx.drawImage(cardCanvas, cardX, cardY, cardW, cardH);
+
+                // Draw bottom text
+                const bottomY = cardY + cardH + 80;
+                ctx.font = 'bold 56px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(h1Text ? h1Text.innerText : 'TSS Music Festival 2026', outW / 2, bottomY);
+                ctx.font = '36px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(h2Text ? h2Text.innerText : 'Young You', outW / 2, bottomY + 60);
+
                 scaleCard();
 
                 // Download
@@ -1105,53 +1181,88 @@
             if (isIOS) {
                 canvas = await captureForIOS();
             } else {
-                // Desktop share logic (similar to download)
-                const downloadArea = id('downloadArea');
+                // Desktop share - capture card with rounded corners
                 const card = id('idCard');
-                const wrapperFront = id('cardWrapper');
 
-                card.style.transform = 'scale(1)';
-                wrapperFront.style.marginBottom = '0px';
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+                await new Promise(r => setTimeout(r, 200));
 
-                const CARD_WIDTH = 600;
-                downloadArea.style.width = CARD_WIDTH + 'px';
-                downloadArea.style.maxWidth = CARD_WIDTH + 'px';
-                wrapperFront.style.width = CARD_WIDTH + 'px';
-
-                await new Promise(r => setTimeout(r, 100));
-
-                const captured = await html2canvas(downloadArea, {
+                const cardCanvasRaw = await html2canvas(card, {
                     scale: 2,
-                    backgroundColor: null,
+                    backgroundColor: '#ebecdf',
                     logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    onclone: sanitizeClone
+                    useCORS: false,
+                    allowTaint: false,
+                    imageTimeout: 5000,
+                    onclone: (clonedDoc) => {
+                        const clonedCard = clonedDoc.querySelector('#idCard');
+                        if (clonedCard) {
+                            // Keep background pattern, remove filters and shadows
+                            const stars = clonedCard.querySelectorAll('.star');
+                            stars.forEach(el => {
+                                el.style.filter = 'none';
+                                el.style.mixBlendMode = 'normal';
+                            });
+                            clonedCard.style.boxShadow = 'none';
+                        }
+                    }
                 });
+
+                canvas = applyRoundedCorners(cardCanvasRaw, 80);
+
+                const topText = document.querySelector('.top-caption');
+                const h1Text = document.querySelector('.Bottom-Caption h1');
+                const h2Text = document.querySelector('.Bottom-Caption h2');
 
                 const outW = 1080;
                 const outH = 1920;
-                canvas = document.createElement('canvas');
-                canvas.width = outW;
-                canvas.height = outH;
-                const ctx = canvas.getContext('2d');
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = outW;
+                finalCanvas.height = outH;
+                const ctx = finalCanvas.getContext('2d');
                 
-                const gradient = ctx.createLinearGradient(0, 0, outW, outH);
-                gradient.addColorStop(0, '#a8c5a8');
-                gradient.addColorStop(0.5, '#e8d5b8');
-                gradient.addColorStop(1, '#e8b8c8');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, outW, outH);
+                const bgImg = new Image();
+                const bgLoaded = await new Promise((resolve) => {
+                    bgImg.onload = () => resolve(true);
+                    bgImg.onerror = () => resolve(false);
+                    bgImg.src = 'WebsiteBG.png';
+                    setTimeout(() => resolve(false), 2000);
+                });
 
-                const padding = 40;
-                const scale = Math.min((outW - padding * 2) / captured.width, (outH - padding * 2) / captured.height);
-                const drawW = captured.width * scale;
-                const drawH = captured.height * scale;
-                const x = (outW - drawW) / 2;
-                const y = (outH - drawH) / 2;
+                if (bgLoaded) {
+                    ctx.drawImage(bgImg, 0, 0, outW, outH);
+                } else {
+                    const gradient = ctx.createLinearGradient(0, 0, outW, outH);
+                    gradient.addColorStop(0, '#a8c5a8');
+                    gradient.addColorStop(0.5, '#e8d5b8');
+                    gradient.addColorStop(1, '#e8b8c8');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, outW, outH);
+                }
 
-                ctx.drawImage(captured, x, y, drawW, drawH);
+                const textY = 200;
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 70px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(topText ? topText.innerText : "You're still young", outW / 2, textY);
 
+                const cardScale = (outW - 80) / canvas.width;
+                const cardW = canvas.width * cardScale;
+                const cardH = canvas.height * cardScale;
+                const cardY = textY + 100;
+                const cardX = (outW - cardW) / 2;
+
+                ctx.drawImage(canvas, cardX, cardY, cardW, cardH);
+
+                const bottomY = cardY + cardH + 80;
+                ctx.font = 'bold 56px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(h1Text ? h1Text.innerText : 'TSS Music Festival 2026', outW / 2, bottomY);
+                ctx.font = '36px "IBM Plex Sans Thai", Arial, sans-serif';
+                ctx.fillText(h2Text ? h2Text.innerText : 'Young You', outW / 2, bottomY + 60);
+
+                canvas = finalCanvas;
                 scaleCard();
             }
 
