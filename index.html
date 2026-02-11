@@ -492,6 +492,59 @@
         font-size: 24px;
     }
 
+    /* iOS Download Modal */
+    .ios-download-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .ios-download-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .ios-download-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .ios-instructions {
+        text-align: left;
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .ios-instructions ol {
+        margin: 10px 0;
+        padding-left: 20px;
+    }
+
+    .ios-instructions li {
+        margin: 8px 0;
+    }
+
     @media (max-width: 640px) {
         .cards-stack { gap: 10px; }
         .btn { font-size: 14px; padding: 8px 16px; }
@@ -543,6 +596,23 @@
                     <button class="btn btn-cancel" id="btnCancelCrop">Cancel</button>
                     <button class="btn" id="btnApplyCrop">Crop & Use</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- iOS Download Modal -->
+        <div class="ios-download-modal" id="iosDownloadModal">
+            <div class="ios-download-content">
+                <h3 style="margin-top:0;">Your Card is Ready!</h3>
+                <img id="iosDownloadImage" class="ios-download-image" src="">
+                <div class="ios-instructions">
+                    <strong>To save this image:</strong>
+                    <ol>
+                        <li>Tap and hold on the image above</li>
+                        <li>Select "Add to Photos" or "Save Image"</li>
+                        <li>Your card will be saved to your Photos app</li>
+                    </ol>
+                </div>
+                <button class="btn" id="btnCloseIOSModal">Close</button>
             </div>
         </div>
 
@@ -638,7 +708,7 @@
     <input type="file" id="imgInput" accept="image/*">
 
     <footer style="text-align: center; padding: 20px; color: #666; font-size: 12px; margin-top: 40px;">
-        <p>© 2026 [Methas Nateesuwan • Created for TSS MusicFest 2026</p>
+        <p>© 2026 Methas Nateesuwan • Created for TSS MusicFest 2026</p>
         <p style="font-size: 10px; margin-top: 8px;">All rights reserved. This project may not be copied or distributed without permission.</p>
     </footer>
 
@@ -655,10 +725,19 @@
     const btnApplyCrop = id('btnApplyCrop');
     const btnCancelCrop = id('btnCancelCrop');
 
+    const iosDownloadModal = id('iosDownloadModal');
+    const iosDownloadImage = id('iosDownloadImage');
+    const btnCloseIOSModal = id('btnCloseIOSModal');
+
     let cropper = null;
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // Close iOS modal
+    btnCloseIOSModal.addEventListener('click', () => {
+        iosDownloadModal.style.display = 'none';
+    });
 
     // IMAGE LOGIC
     imgInput.addEventListener('change', (e) => {
@@ -806,8 +885,6 @@
             el.style.filter = 'none';
             el.style.mixBlendMode = 'normal';
         });
-
-        // Keep the dotted pattern - don't remove it anymore
     }
 
     id('btnDownload').addEventListener('click', async () => {
@@ -857,7 +934,6 @@
         }
         await waitForImages(downloadArea);
 
-        // Load the background image
         const bgImage = await loadBackgroundImage();
 
         function runCapture(scale) {
@@ -989,32 +1065,33 @@
                 ctx.drawImage(captured, x, y, drawW, drawH);
             }
 
-                // iOS-friendly download logic
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-                try {
-                    if (isIOS) {
-                        // Just navigate to the PNG; user long‑presses and saves.
-                        const dataUrl = combinedCanvas.toDataURL('image/png');
-                        window.location.href = dataUrl;
-                    } else {
-                        combinedCanvas.toBlob(blob => {
-                            if (!blob) return;
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'musicfest-id-card.png';
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                        });
-                    }
-                } catch (e) {
-                    console.error('Download error:', e);
-                    alert('Error generating image. Please try again.');
+            // iOS-FRIENDLY DOWNLOAD
+            try {
+                if (isIOS) {
+                    // Show the image in a modal with instructions
+                    const dataUrl = combinedCanvas.toDataURL('image/png');
+                    iosDownloadImage.src = dataUrl;
+                    iosDownloadModal.style.display = 'flex';
+                } else {
+                    // Regular download for non-iOS
+                    combinedCanvas.toBlob(blob => {
+                        if (!blob) {
+                            throw new Error('Failed to create blob');
+                        }
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'musicfest-id-card.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 'image/png');
                 }
+            } catch (e) {
+                console.error('Download error:', e);
+                alert('Error generating image. Please try again.');
+            }
 
         } catch (err) {
             console.error('Download error:', err);
